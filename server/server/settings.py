@@ -27,8 +27,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-AUTH_USER_MODEL = 'accounts.CustomUser'
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -42,6 +40,12 @@ INSTALLED_APPS = [
     'events',
       'rest_framework',
 ]
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+AUTH_USER_MODEL='accounts.CustomUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -78,12 +82,21 @@ WSGI_APPLICATION = 'server.wsgi.application'
 
 DATABASES = {
     'default': {
+<<<<<<< HEAD
         "ENGINE": "django.db.backends.mysql",
         "NAME":"eventbooking",
         'USER':'root',
         'PASSWORD':'pallavik@123',
         'HOST':'localhost',
         'PORT':'3306'
+=======
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'event_booking',
+        'USER': 'root',
+        'PASSWORD': 'hema123',
+        'HOST': 'localhost',
+        'PORT': '3306', 
+>>>>>>> baab5416ec3d95c531d46822a529ea66dd00e60e
     }
 }
 
