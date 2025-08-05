@@ -1,24 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import EventList from './pages/EventList';
+import BookEvent from './pages/BookEvent';
+import AttendeeTransactions from './pages/AttendeeTransactions';
+import CreateEvent from './pages/CreateEvent';
+import EditEvent from './pages/EditEvent';
+import OrganizerTransactions from './pages/OrganizerTransactions';
+import AttendeeEventList from './pages/AttendeeEventList';
+
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<EventList />} />
+        <Route path="/book/:eventId" element={<BookEvent />} />
+        <Route path="/my-transactions" element={<AttendeeTransactions />} />
+        <Route path="/organizer/create" element={<CreateEvent />} />
+        <Route path="/organizer/edit/:eventId" element={<EditEvent />} />
+        <Route path="/organizer/transactions" element={<OrganizerTransactions />} />
+        <Route path="/attendee/events" element={<AttendeeEventList />} />
+      </Routes>
+    </Router>
   );
 }
 

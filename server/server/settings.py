@@ -83,6 +83,7 @@ WSGI_APPLICATION = 'server.wsgi.application'
 DATABASES = {
     'default': {
 
+<<<<<<< HEAD
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'event_booking',
         'USER': 'root',
@@ -90,6 +91,17 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '3306', 
   }
+=======
+        "ENGINE": "django.db.backends.mysql",
+        "NAME":"eventbooking",
+        'USER':'root',
+        'PASSWORD':'pallavik@123',
+        'HOST':'localhost',
+        'PORT':'3306'
+
+       
+    }
+>>>>>>> 7a70f8cb9b4273d802c6533b354064cec09f20db
 }
 
 
