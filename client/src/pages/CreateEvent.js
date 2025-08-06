@@ -1,19 +1,26 @@
-// src/components/CreateEvent.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function CreateEvent() {
   const navigate = useNavigate();
+
   const [eventData, setEventData] = useState({
     title: '',
     date: '',
+    startTime: '',
+    endTime: '',
     location: '',
     description: '',
     category: '',
-    banner: '', 
+    banner: '',
+    ticketType: 'free',
+    quantity: '',
+    price: '',
+    organizerName: '',
+    organizerContact: '',
   });
 
-  const [preview, setPreview] = useState(null); 
+  const [preview, setPreview] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,51 +41,95 @@ export default function CreateEvent() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const events = JSON.parse(localStorage.getItem('events')) || [];
+
     const newEvent = {
+      id: Date.now(), // Unique ID added here
       ...eventData,
-      id: Date.now()
     };
-    localStorage.setItem('events', JSON.stringify([...events, newEvent]));
-    alert('Event Created!');
-    navigate('/organizer-events');
+
+    const existingEvents = JSON.parse(localStorage.getItem('events')) || [];
+    existingEvents.push(newEvent);
+    localStorage.setItem('events', JSON.stringify(existingEvents));
+
+    alert('Event created successfully!');
+    navigate(`/view-event/${newEvent.id}`);
   };
 
   return (
-    <div className="container mt-4">
-      <h2>Create New Event</h2>
+    <div className="container mt-5">
+      <h2>Create Event</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
-          <label>Title</label>
-          <input type="text" name="title" className="form-control" required onChange={handleChange} />
-        </div>
-        <div className="mb-3">
-          <label>Date</label>
-          <input type="date" name="date" className="form-control" required onChange={handleChange} />
-        </div>
-        <div className="mb-3">
-          <label>Location</label>
-          <input type="text" name="location" className="form-control" required onChange={handleChange} />
-        </div>
-        <div className="mb-3">
-          <label>Description</label>
-          <textarea name="description" className="form-control" required onChange={handleChange}></textarea>
-        </div>
-        <div className="mb-3">
-          <label>Category</label>
-          <input type="text" name="category" className="form-control" required onChange={handleChange} />
-        </div>
-        <div className="mb-3">
-          <label>Banner Image</label>
-          <input type="file" accept="image/*" className="form-control" onChange={handleImageChange} />
+          <label>Title:</label>
+          <input type="text" name="title" value={eventData.title} onChange={handleChange} className="form-control" required />
         </div>
 
-        {preview && (
-          <div className="mb-3">
-            <label>Preview:</label><br />
-            <img src={preview} alt="Banner Preview" className="img-fluid" style={{ maxHeight: '200px' }} />
-          </div>
+        <div className="mb-3">
+          <label>Date:</label>
+          <input type="date" name="date" value={eventData.date} onChange={handleChange} className="form-control" required />
+        </div>
+
+        <div className="mb-3">
+          <label>Start Time:</label>
+          <input type="time" name="startTime" value={eventData.startTime} onChange={handleChange} className="form-control" required />
+        </div>
+
+        <div className="mb-3">
+          <label>End Time:</label>
+          <input type="time" name="endTime" value={eventData.endTime} onChange={handleChange} className="form-control" required />
+        </div>
+
+        <div className="mb-3">
+          <label>Location:</label>
+          <input type="text" name="location" value={eventData.location} onChange={handleChange} className="form-control" required />
+        </div>
+
+        <div className="mb-3">
+          <label>Description:</label>
+          <textarea name="description" value={eventData.description} onChange={handleChange} className="form-control" required />
+        </div>
+
+        <div className="mb-3">
+          <label>Category:</label>
+          <input type="text" name="category" value={eventData.category} onChange={handleChange} className="form-control" required />
+        </div>
+
+        <div className="mb-3">
+          <label>Banner Image:</label>
+          <input type="file" onChange={handleImageChange} className="form-control" />
+          {preview && <img src={preview} alt="Preview" className="mt-3" style={{ maxWidth: '100%', height: 'auto' }} />}
+        </div>
+
+        <div className="mb-3">
+          <label>Ticket Type:</label>
+          <select name="ticketType" value={eventData.ticketType} onChange={handleChange} className="form-control">
+            <option value="free">Free</option>
+            <option value="paid">Paid</option>
+          </select>
+        </div>
+
+        {eventData.ticketType === 'paid' && (
+          <>
+            <div className="mb-3">
+              <label>Quantity:</label>
+              <input type="number" name="quantity" value={eventData.quantity} onChange={handleChange} className="form-control" required />
+            </div>
+            <div className="mb-3">
+              <label>Price:</label>
+              <input type="number" name="price" value={eventData.price} onChange={handleChange} className="form-control" required />
+            </div>
+          </>
         )}
+
+        <div className="mb-3">
+          <label>Organizer Name:</label>
+          <input type="text" name="organizerName" value={eventData.organizerName} onChange={handleChange} className="form-control" required />
+        </div>
+
+        <div className="mb-3">
+          <label>Organizer Contact:</label>
+          <input type="text" name="organizerContact" value={eventData.organizerContact} onChange={handleChange} className="form-control" required />
+        </div>
 
         <button type="submit" className="btn btn-primary">Create Event</button>
       </form>

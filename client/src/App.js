@@ -8,6 +8,8 @@ import CreateEvent from './pages/CreateEvent';
 import EditEvent from './pages/EditEvent';
 import OrganizerTransactions from './pages/OrganizerTransactions';
 import AttendeeEventList from './pages/AttendeeEventList';
+import ViewEvent from './pages/ViewEvent';
+
 
 
 function App() {
@@ -22,6 +24,8 @@ function App() {
         <Route path="/organizer/edit/:eventId" element={<EditEvent />} />
         <Route path="/organizer/transactions" element={<OrganizerTransactions />} />
         <Route path="/attendee/events" element={<AttendeeEventList />} />
+        <Route path="/view-event/:id" element={<ViewEvent />} />
+
       </Routes>
     </Router>
   );
