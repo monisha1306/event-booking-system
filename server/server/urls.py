@@ -16,10 +16,6 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-<<<<<<< HEAD
-=======
-
->>>>>>> 7a70f8cb9b4273d802c6533b354064cec09f20db
 from rest_framework.routers import DefaultRouter
 from events.views import EventViewSet, TicketTierViewSet
 router = DefaultRouter()
@@ -30,9 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('api/accounts/',include('accounts.urls')),
-<<<<<<< HEAD
-]
-=======
+    path('api/booking/', include('booking.urls')),
 
 ]
->>>>>>> 7a70f8cb9b4273d802c6533b354064cec09f20db
+

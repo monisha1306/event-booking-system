@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'events',
-      'rest_framework',
+    'booking',
+    'rest_framework',
+    'rest_framework_simplejwt',
 ]
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -83,26 +85,17 @@ WSGI_APPLICATION = 'server.wsgi.application'
 DATABASES = {
     'default': {
 
-<<<<<<< HEAD
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'event_booking',
-        'USER': 'root',
-        'PASSWORD': 'hema123',
-        'HOST': 'localhost',
-        'PORT': '3306', 
-  }
-=======
-        "ENGINE": "django.db.backends.mysql",
-        "NAME":"eventbooking",
+        'NAME': 'eventbooking',
         'USER':'root',
-        'PASSWORD':'pallavik@123',
+        'PASSWORD':'Raksh@06',
         'HOST':'localhost',
-        'PORT':'3306'
+        'PORT':'3306',
 
        
     }
->>>>>>> 7a70f8cb9b4273d802c6533b354064cec09f20db
 }
+
 
 
 # Password validation

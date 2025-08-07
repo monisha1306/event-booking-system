@@ -17,3 +17,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             phone=validated_data.get('phone',' '),
         )
         return user
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'email', 'role', 'phone', 'profile_image']
