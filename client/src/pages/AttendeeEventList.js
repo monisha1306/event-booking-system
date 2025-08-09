@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
+<<<<<<< HEAD
 import axios from 'axios';
+=======
+import { Link } from 'react-router-dom';
+>>>>>>> 6820a09a86b2f4f31fb16469316b2c75dd2b7379
 
-export default function AttendeeEventList() {
+export default function AttendeeEvents() {
   const [events, setEvents] = useState([]);
-  const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('');
-  const [date, setDate] = useState('');
-  const [location, setLocation] = useState('');
 
   useEffect(() => {
+<<<<<<< HEAD
   console.log("🔄 useEffect triggered");
   axios.get('http://localhost:5000/events')
     .then(res => {
@@ -79,11 +80,43 @@ export default function AttendeeEventList() {
                 <p className="card-text">{event.description}</p>
                 <p className="card-text"><strong>Category:</strong> {event.category}</p>
                 <button className="btn btn-success" onClick={() => handleBook(event.id)}>Book Now</button>
+=======
+    const storedEvents = JSON.parse(localStorage.getItem('events')) || [];
+    setEvents(storedEvents);
+  }, []);
+
+  return (
+    <div className="container mt-4">
+      <h2>All Events</h2>
+      {events.length === 0 ? (
+        <p>No events available.</p>
+      ) : (
+        <div className="row">
+          {events.map(event => (
+            <div className="col-md-4 mb-4" key={event.id}>
+              <div className="card h-100 shadow-sm">
+                {event.banner && (
+                  <img 
+                    src={event.banner} 
+                    className="card-img-top" 
+                    alt="Event Banner" 
+                    style={{ maxHeight: '180px', objectFit: 'cover' }}
+                  />
+                )}
+                <div className="card-body d-flex flex-column">
+                  <h5 className="card-title">{event.title}</h5>
+                  <p className="card-text"><strong>Date:</strong> {event.date}</p>
+                  <p className="card-text"><strong>Location:</strong> {event.location}</p>
+                  <Link to={`/event/${event.id}`} className="btn btn-primary mt-auto">
+                    View Details
+                  </Link>
+                </div>
+>>>>>>> 6820a09a86b2f4f31fb16469316b2c75dd2b7379
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

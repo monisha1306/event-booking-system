@@ -17,7 +17,7 @@ class Event(models.Model):
     description = models.TextField()
     date = models.DateField()
     time = models.TimeField()
-    location = models.CharField(max_length=255)
+    location = models.CharField(max_length=255,null=True)
     category = models.CharField(max_length=100)
     banner_image = models.ImageField(upload_to="event_banners/", blank=True, null=True)
 

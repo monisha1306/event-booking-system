@@ -12,6 +12,7 @@ class TicketTierSerializer(serializers.ModelSerializer):
 
 class EventSerializer(serializers.ModelSerializer):
     ticket_tiers = TicketTierSerializer(many=True, required=False)
+   
 
     class Meta:
         model = Event

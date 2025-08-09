@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function EventList() {
   const [events, setEvents] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const savedEvents = JSON.parse(localStorage.getItem('events')) || [];
-    setEvents(savedEvents);
+    axios.get('http://localhost:5000/events')
+      .then(res => {
+        console.log("✅ Events received:", res.data);
+        setEvents(res.data);
+      })
+      .catch(err => console.log("❌ Error fetching events:", err));
   }, []);
 
   const handleBook = (event) => {
@@ -32,12 +37,12 @@ export default function EventList() {
         {events.map((event) => (
           <div className="col-md-4 mb-4" key={event.id}>
             <div className="card">
-              {event.banner && (
-                <img src={event.banner} className="card-img-top" alt="banner" />
+              {event.banner_image && ( // ✅ use banner_image from DB
+                <img src={event.banner_image} className="card-img-top" alt="banner" />
               )}
               <div className="card-body">
                 <h5 className="card-title">{event.title}</h5>
-                <p>{event.date} | {event.location}</p>
+                <p>{new Date(event.date).toLocaleDateString()} | {event.location}</p>
                 <p>{event.description}</p>
                 <p><strong>Category:</strong> {event.category}</p>
                 <button className="btn btn-success" onClick={() => handleBook(event)}>Book Now</button>
