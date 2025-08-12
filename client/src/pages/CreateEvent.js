@@ -13,7 +13,7 @@ export default function CreateEvent() {
     description: '',
     category: '',
     banner: '',
-    ticketType: 'free',
+    ticketType: 'VIP', 
     quantity: '',
     price: '',
     organizerName: '',
@@ -43,7 +43,7 @@ export default function CreateEvent() {
     e.preventDefault();
 
     const newEvent = {
-      id: Date.now(), // Unique ID added here
+      id: Date.now(),
       ...eventData,
     };
 
@@ -59,68 +59,77 @@ export default function CreateEvent() {
     <div className="container mt-5">
       <h2>Create Event</h2>
       <form onSubmit={handleSubmit}>
+        
         <div className="mb-3">
           <label>Title:</label>
           <input type="text" name="title" value={eventData.title} onChange={handleChange} className="form-control" required />
         </div>
 
+       
         <div className="mb-3">
           <label>Date:</label>
           <input type="date" name="date" value={eventData.date} onChange={handleChange} className="form-control" required />
         </div>
 
+        
         <div className="mb-3">
           <label>Start Time:</label>
           <input type="time" name="startTime" value={eventData.startTime} onChange={handleChange} className="form-control" required />
         </div>
 
+        
         <div className="mb-3">
           <label>End Time:</label>
           <input type="time" name="endTime" value={eventData.endTime} onChange={handleChange} className="form-control" required />
         </div>
 
+        
         <div className="mb-3">
           <label>Location:</label>
           <input type="text" name="location" value={eventData.location} onChange={handleChange} className="form-control" required />
         </div>
 
+        
         <div className="mb-3">
           <label>Description:</label>
           <textarea name="description" value={eventData.description} onChange={handleChange} className="form-control" required />
         </div>
 
+     
         <div className="mb-3">
           <label>Category:</label>
           <input type="text" name="category" value={eventData.category} onChange={handleChange} className="form-control" required />
         </div>
 
+        
         <div className="mb-3">
           <label>Banner Image:</label>
           <input type="file" onChange={handleImageChange} className="form-control" />
           {preview && <img src={preview} alt="Preview" className="mt-3" style={{ maxWidth: '100%', height: 'auto' }} />}
         </div>
 
+        
         <div className="mb-3">
           <label>Ticket Type:</label>
           <select name="ticketType" value={eventData.ticketType} onChange={handleChange} className="form-control">
-            <option value="free">Free</option>
-            <option value="paid">Paid</option>
+            <option value="VIP">VIP</option>
+            <option value="Early Bird">Early Bird</option>
+            <option value="General">General</option>
           </select>
         </div>
 
-        {eventData.ticketType === 'paid' && (
-          <>
-            <div className="mb-3">
-              <label>Quantity:</label>
-              <input type="number" name="quantity" value={eventData.quantity} onChange={handleChange} className="form-control" required />
-            </div>
-            <div className="mb-3">
-              <label>Price:</label>
-              <input type="number" name="price" value={eventData.price} onChange={handleChange} className="form-control" required />
-            </div>
-          </>
-        )}
+        
+        <div className="mb-3">
+          <label>Total Tickets Available:</label>
+          <input type="number" name="quantity" value={eventData.quantity} onChange={handleChange} className="form-control" min="1" required />
+        </div>
 
+        <div className="mb-3">
+          <label>Ticket Price:</label>
+          <input type="number" name="price" value={eventData.price} onChange={handleChange} className="form-control" min="0" step="0.01" required />
+        </div>
+
+       
         <div className="mb-3">
           <label>Organizer Name:</label>
           <input type="text" name="organizerName" value={eventData.organizerName} onChange={handleChange} className="form-control" required />
