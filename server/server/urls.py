@@ -23,14 +23,11 @@ router.register(r'events', EventViewSet)
 router.register(r'tickets', TicketTierViewSet)
 
 urlpatterns = [
+    path('', 'LandingPageView', name='landing_page'),
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('api/accounts/',include('accounts.urls')),
-<<<<<<< HEAD
     path('api/booking/', include('booking.urls')),
 
 ]
 
-=======
-]
->>>>>>> 90e5ec4 (Restoring changes)

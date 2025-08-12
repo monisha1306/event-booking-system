@@ -20,3 +20,16 @@ class ProfileView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user
 
+class LandingPageView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        return Response({
+            "message": "Welcome to the Event Booking System API!",
+            "endpoints": {
+                "register": "/api/accounts/register/",
+                "login": "/api/accounts/login/",
+                "refresh": "/api/accounts/refresh/",
+                "profile": "/api/accounts/profile/"
+            }
+        })
