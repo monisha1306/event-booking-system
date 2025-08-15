@@ -8,7 +8,9 @@ export default function CreateEvent() {
     title: '',
     date: '',
     startTime: '',
+    startAmPm: 'AM',
     endTime: '',
+    endAmPm: 'AM',
     location: '',
     description: '',
     category: '',
@@ -54,6 +56,10 @@ export default function CreateEvent() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Combine time and AM/PM for saving
+    const formattedStartTime = `${eventData.startTime} ${eventData.startAmPm}`;
+    const formattedEndTime = `${eventData.endTime} ${eventData.endAmPm}`;
+
     // Calculate total tickets and total revenue
     const totalTickets =
       Number(eventData.tickets.vip.quantity || 0) +
@@ -68,6 +74,8 @@ export default function CreateEvent() {
     const newEvent = {
       id: Date.now(),
       ...eventData,
+      startTime: formattedStartTime,
+      endTime: formattedEndTime,
       totalTickets,
       totalRevenue
     };
@@ -97,12 +105,24 @@ export default function CreateEvent() {
 
         <div className="mb-3">
           <label>Start Time:</label>
-          <input type="time" name="startTime" value={eventData.startTime} onChange={handleChange} className="form-control" required />
+          <div className="d-flex gap-2">
+            <input type="time" name="startTime" value={eventData.startTime} onChange={handleChange} className="form-control" required />
+            <select name="startAmPm" value={eventData.startAmPm} onChange={handleChange} className="form-select" style={{ maxWidth: '80px' }}>
+              <option value="AM">AM</option>
+              <option value="PM">PM</option>
+            </select>
+          </div>
         </div>
 
         <div className="mb-3">
           <label>End Time:</label>
-          <input type="time" name="endTime" value={eventData.endTime} onChange={handleChange} className="form-control" required />
+          <div className="d-flex gap-2">
+            <input type="time" name="endTime" value={eventData.endTime} onChange={handleChange} className="form-control" required />
+            <select name="endAmPm" value={eventData.endAmPm} onChange={handleChange} className="form-select" style={{ maxWidth: '80px' }}>
+              <option value="AM">AM</option>
+              <option value="PM">PM</option>
+            </select>
+          </div>
         </div>
 
         <div className="mb-3">
@@ -127,7 +147,6 @@ export default function CreateEvent() {
         </div>
 
         <h4>Ticket Details</h4>
-
         {['vip', 'earlyBird', 'general'].map((type) => (
           <div key={type} className="border p-3 mb-3">
             <h5>{type === 'vip' ? 'VIP' : type === 'earlyBird' ? 'Early Bird' : 'General'}</h5>
