@@ -6,6 +6,7 @@ from .models import CustomUser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .serializers import ProfileSerializer
+from rest_framework.views import APIView
 
 
 class RegisterView(generics.CreateAPIView):
