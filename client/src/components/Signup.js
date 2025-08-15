@@ -31,9 +31,13 @@ const Signup = () => {
       setError('Please select whether you are an Organizer or Attendee');
       return;
     }
-
-    console.log('Signup data:', formData);
-    navigate('/dashboard');
+    if (formData.role === "Organizer") {
+      console.log('Signup data:', formData);
+      navigate('/organizer/create');
+    }
+    else {
+      navigate('/dashboard');
+    }
   };
 
   return (

@@ -10,7 +10,7 @@ const NavigationBar = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link as={Link} to="/">Events</Nav.Link>
+            <Nav.Link as={Link} to="/events">Events</Nav.Link>
             <Nav.Link as={Link} to="/my-transactions">My Transactions</Nav.Link>
             <Nav.Link as={Link} to="/organizer/create">Create Event</Nav.Link>
             <Nav.Link as={Link} to="/organizer/transactions">Organizer Transactions</Nav.Link>
