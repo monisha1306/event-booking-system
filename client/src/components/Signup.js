@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Form, Button, Container, Alert, Card } from 'react-bootstrap';
+import { Form, Button, Container, Alert, Card, Spinner } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import './Login.css'; // Reusing the same CSS as login
+import axios from 'axios';
+import './Login.css';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -10,7 +11,10 @@ const Signup = () => {
     password: '',
     confirmPassword: ''
   });
+
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -20,16 +24,45 @@ const Signup = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Basic validation
-    if (formData.password !== formData.confirmPassword) {
+    setError('');
+    setSuccess('');
+    setLoading(true);
+
+    const { name, email, password, confirmPassword } = formData;
+
+    if (password !== confirmPassword) {
       setError('Passwords do not match');
+      setLoading(false);
       return;
     }
-    // TODO: Add your signup API call here
-    console.log('Signup data:', formData);
-    navigate('/dashboard'); // Redirect after successful signup
+
+    try {
+      const response = await axios.post('http://localhost:8000/api/accounts/register/', {
+        username,
+        email,
+        password
+      });
+
+      setSuccess('Signup successful! Redirecting...');
+      setLoading(false);
+
+      // If backend sends JWT token and you want to store it:
+      // localStorage.setItem('token', response.data.token);
+
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+      if (err.response && err.response.data) {
+        setError(err.response.data.detail || 'Signup failed. Please try again.');
+      } else {
+        setError('Server error. Please try again later.');
+      }
+    }
   };
 
   return (
@@ -38,7 +71,8 @@ const Signup = () => {
         <Card.Body>
           <h2 className="text-center mb-4">Create Your Account</h2>
           {error && <Alert variant="danger" className="text-center">{error}</Alert>}
-          
+          {success && <Alert variant="success" className="text-center">{success}</Alert>}
+
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
               <Form.Label>Full Name</Form.Label>
@@ -93,8 +127,9 @@ const Signup = () => {
                 variant="primary" 
                 type="submit" 
                 size="lg"
+                disabled={loading}
               >
-                Sign Up
+                {loading ? <Spinner animation="border" size="sm" /> : 'Sign Up'}
               </Button>
             </div>
 

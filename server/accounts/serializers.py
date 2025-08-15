@@ -17,7 +17,15 @@ class RegisterSerializer(serializers.ModelSerializer):
             phone=validated_data.get('phone',' '),
         )
         return user
+<<<<<<< HEAD
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['username', 'email', 'role', 'phone', 'profile_image']
+=======
+    
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'email', 'first_name', 'last_name', 'role', 'phone', 'profile_image']
+>>>>>>> 90e5ec4 (Restoring changes)
