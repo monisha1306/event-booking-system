@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
-import { Form, Button, Container, Alert, Card } from 'react-bootstrap';
+import { Form, Button, Container, Alert, Card, Spinner } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
+<<<<<<< HEAD
 import './Login.css';
+=======
+import axios from 'axios';
+import './Login.css'; 
+
+>>>>>>> d9372cb8055f1926a0c4a3708d4516073e15e9b1
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -9,11 +15,20 @@ const Signup = () => {
     email: '',
     password: '',
     confirmPassword: '',
+<<<<<<< HEAD
     role: '',
     organizationName: '' // Only for organizer
   });
 
   const [errors, setErrors] = useState({});
+=======
+    role: '' 
+  });
+
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
+>>>>>>> d9372cb8055f1926a0c4a3708d4516073e15e9b1
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -50,18 +65,55 @@ const Signup = () => {
     setErrors(newErrors);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+<<<<<<< HEAD
 
     // Validate all fields at once
     Object.keys(formData).forEach((field) => validateField(field, formData[field]));
 
     if (Object.keys(errors).length > 0) {
       return; // Don't submit if there are errors
+=======
+    setError('');
+    setSuccess('');
+    setLoading(true);
+
+    const { name, email, password, confirmPassword } = formData;
+
+    
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
+>>>>>>> d9372cb8055f1926a0c4a3708d4516073e15e9b1
     }
 
-    console.log('Signup data:', formData);
-    navigate('/dashboard');
+    try {
+      const response = await axios.post('http://localhost:8000/api/accounts/register/', {
+        username,
+        email,
+        password
+      });
+
+      setSuccess('Signup successful! Redirecting...');
+      setLoading(false);
+
+      // If backend sends JWT token and you want to store it:
+      // localStorage.setItem('token', response.data.token);
+
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+      if (err.response && err.response.data) {
+        setError(err.response.data.detail || 'Signup failed. Please try again.');
+      } else {
+        setError('Server error. Please try again later.');
+      }
+    }
   };
 
   return (
@@ -69,11 +121,16 @@ const Signup = () => {
       <Card className="login-card">
         <Card.Body>
           <h2 className="text-center mb-4">Create Your Account</h2>
+<<<<<<< HEAD
           {Object.keys(errors).length > 0 && (
             <Alert variant="danger" className="text-center">
               Please fix the errors before submitting
             </Alert>
           )}
+=======
+          {error && <Alert variant="danger" className="text-center">{error}</Alert>}
+          {success && <Alert variant="success" className="text-center">{success}</Alert>}
+>>>>>>> d9372cb8055f1926a0c4a3708d4516073e15e9b1
 
           <Form onSubmit={handleSubmit}>
             {/* Name */}

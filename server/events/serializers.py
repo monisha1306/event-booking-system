@@ -17,7 +17,7 @@ class EventSerializer(serializers.ModelSerializer):
         model = Event
         fields = '__all__'
         extra_kwargs = {
-            'organizer': {'required': False, 'allow_null': True}  # ✅ allow null
+            'organizer': {'required': False, 'allow_null': True}  
         }
 
     def create(self, validated_data):
@@ -26,3 +26,5 @@ class EventSerializer(serializers.ModelSerializer):
         for tier_data in tiers_data:
             TicketTier.objects.create(event=event, **tier_data)
         return event
+    
+
