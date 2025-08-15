@@ -18,11 +18,13 @@ from django.contrib import admin
 from django.urls import path,include
 from rest_framework.routers import DefaultRouter
 from events.views import EventViewSet, TicketTierViewSet
+from accounts.views import LandingPageView
 router = DefaultRouter()
 router.register(r'events', EventViewSet)
 router.register(r'tickets', TicketTierViewSet)
 
 urlpatterns = [
+    path('', LandingPageView.as_view(), name='landing_page'),
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('api/accounts/',include('accounts.urls')),

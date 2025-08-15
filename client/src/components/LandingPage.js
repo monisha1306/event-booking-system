@@ -36,12 +36,12 @@ const LandingPage = () => {
   return (
     <div className="landing-page">
       {/* Hero Section */}
-      <section className="hero-section">
+      <section className="hero-section py-5">
         <Container>
           <Row className="align-items-center">
-            <Col md={6}>
-              <h1>Discover Amazing Events Near You</h1>
-              <p className="lead">
+            <Col md={6} className="text-center text-md-start">
+              <h1 className="mb-3">Discover Amazing Events Near You</h1>
+              <p className="lead mb-4">
                 Book tickets for concerts, conferences, workshops and more. Never miss out on your favorite events!
               </p>
               <div className="cta-buttons">
@@ -55,14 +55,12 @@ const LandingPage = () => {
                 <Button 
                   variant="outline-primary" 
                   size="lg" 
-                  className="ms-3"
-                  onClick={() => navigate('/Signup')}
                 >
                   Create Account
                 </Button>
               </div>
             </Col>
-            <Col md={6}>
+            <Col md={6} className="text-center">
               <img 
                 src="https://i.pinimg.com/1200x/fc/68/4f/fc684f301ee23e44c53ae749e42b13b2.jpg" 
                 alt="People at an event" 
@@ -74,24 +72,24 @@ const LandingPage = () => {
       </section>
 
       {/* Featured Events */}
-      <section className="featured-events py-5">
+      <section className="featured-events py-5 bg-light">
         <Container>
           <h2 className="text-center mb-5">Featured Events</h2>
           <Row>
             {featuredEvents.map(event => (
-              <Col key={event.id} md={4} className="mb-4">
-                <Card className="h-100">
-                  <Card.Img variant="top" src={event.image} className='event-card-img' />
+              <Col key={event.id} md={4} sm={6} className="mb-4">
+                <Card className="h-100 shadow-sm">
+                  <Card.Img variant="top" src={event.image} className="event-card-img" />
                   <Card.Body>
                     <Card.Title>{event.title}</Card.Title>
                     <Card.Text>
                       <div className="event-meta">
-                        <span className="date">
-                          <i className="fas fa-calendar-alt me-2"></i>
+                        <span className="d-block mb-2">
+                          <i className="fas fa-calendar-alt me-2 text-muted"></i>
                           {new Date(event.date).toLocaleDateString()}
                         </span>
-                        <span className="location">
-                          <i className="fas fa-map-marker-alt me-2"></i>
+                        <span className="d-block">
+                          <i className="fas fa-map-marker-alt me-2 text-muted"></i>
                           {event.location}
                         </span>
                       </div>
@@ -118,7 +116,7 @@ const LandingPage = () => {
       </section>
 
       {/* Features Section */}
-      <section className="features-section py-5 bg-light">
+      <section className="features-section py-5">
         <Container>
           <h2 className="text-center mb-5">Why Choose Us?</h2>
           <Row>
@@ -126,21 +124,21 @@ const LandingPage = () => {
               <div className="feature-icon mb-3">
                 <i className="fas fa-ticket-alt fa-3x text-primary"></i>
               </div>
-              <h3>Easy Booking</h3>
+              <h4>Easy Booking</h4>
               <p>Simple and intuitive ticket booking process that takes just seconds.</p>
             </Col>
             <Col md={4} className="text-center mb-4">
               <div className="feature-icon mb-3">
                 <i className="fas fa-shield-alt fa-3x text-primary"></i>
               </div>
-              <h3>Secure Payments</h3>
+              <h4>Secure Payments</h4>
               <p>Industry-standard security for all your transactions.</p>
             </Col>
             <Col md={4} className="text-center mb-4">
               <div className="feature-icon mb-3">
                 <i className="fas fa-headset fa-3x text-primary"></i>
               </div>
-              <h3>24/7 Support</h3>
+              <h4>24/7 Support</h4>
               <p>Our team is always ready to help with any questions.</p>
             </Col>
           </Row>

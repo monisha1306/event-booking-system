@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Form, Button, Container, Alert, Card } from 'react-bootstrap';
+import { Form, Button, Container, Alert, Card, Spinner } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import './Login.css'; // Reusing same CSS as login
+import axios from 'axios';
+import './Login.css'; 
+
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -9,9 +11,12 @@ const Signup = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    role: '' // New field for Organizer or Attendee
+    role: '' 
   });
+
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -21,22 +26,54 @@ const Signup = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setSuccess('');
+    setLoading(true);
+
+    const { name, email, password, confirmPassword } = formData;
+
+    
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
+      setLoading(false);
       return;
     }
-    if (!formData.role) {
-      setError('Please select whether you are an Organizer or Attendee');
-      return;
-    }
+
     if (formData.role === "Organizer") {
       console.log('Signup data:', formData);
       navigate('/organizer/create');
     }
     else {
       navigate('/dashboard');
+
+
+    try {
+      const response = await axios.post('http://localhost:8000/api/accounts/register/', {
+        username,
+        email,
+        password
+      });
+
+      setSuccess('Signup successful! Redirecting...');
+      setLoading(false);
+
+      // If backend sends JWT token and you want to store it:
+      // localStorage.setItem('token', response.data.token);
+
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+      if (err.response && err.response.data) {
+        setError(err.response.data.detail || 'Signup failed. Please try again.');
+      } else {
+        setError('Server error. Please try again later.');
+      }
+
     }
   };
 
@@ -46,7 +83,8 @@ const Signup = () => {
         <Card.Body>
           <h2 className="text-center mb-4">Create Your Account</h2>
           {error && <Alert variant="danger" className="text-center">{error}</Alert>}
-          
+          {success && <Alert variant="success" className="text-center">{success}</Alert>}
+
           <Form onSubmit={handleSubmit}>
             {/* Full Name */}
             <Form.Group className="mb-3">
