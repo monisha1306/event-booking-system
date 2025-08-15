@@ -13,11 +13,13 @@ export default function CreateEvent() {
     description: '',
     category: '',
     banner: '',
-    ticketType: 'VIP', 
-    quantity: '',
-    price: '',
+    tickets: {
+      vip: { quantity: '', price: '' },
+      earlyBird: { quantity: '', price: '' },
+      general: { quantity: '', price: '' }
+    },
     organizerName: '',
-    organizerContact: '',
+    organizerContact: ''
   });
 
   const [preview, setPreview] = useState(null);
@@ -25,6 +27,16 @@ export default function CreateEvent() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setEventData({ ...eventData, [name]: value });
+  };
+
+  const handleTicketChange = (type, field, value) => {
+    setEventData((prev) => ({
+      ...prev,
+      tickets: {
+        ...prev.tickets,
+        [type]: { ...prev.tickets[type], [field]: value }
+      }
+    }));
   };
 
   const handleImageChange = (e) => {
@@ -42,9 +54,22 @@ export default function CreateEvent() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Calculate total tickets and total revenue
+    const totalTickets =
+      Number(eventData.tickets.vip.quantity || 0) +
+      Number(eventData.tickets.earlyBird.quantity || 0) +
+      Number(eventData.tickets.general.quantity || 0);
+
+    const totalRevenue =
+      (Number(eventData.tickets.vip.quantity || 0) * Number(eventData.tickets.vip.price || 0)) +
+      (Number(eventData.tickets.earlyBird.quantity || 0) * Number(eventData.tickets.earlyBird.price || 0)) +
+      (Number(eventData.tickets.general.quantity || 0) * Number(eventData.tickets.general.price || 0));
+
     const newEvent = {
       id: Date.now(),
       ...eventData,
+      totalTickets,
+      totalRevenue
     };
 
     const existingEvents = JSON.parse(localStorage.getItem('events')) || [];
@@ -65,71 +90,73 @@ export default function CreateEvent() {
           <input type="text" name="title" value={eventData.title} onChange={handleChange} className="form-control" required />
         </div>
 
-       
         <div className="mb-3">
           <label>Date:</label>
           <input type="date" name="date" value={eventData.date} onChange={handleChange} className="form-control" required />
         </div>
 
-        
         <div className="mb-3">
           <label>Start Time:</label>
           <input type="time" name="startTime" value={eventData.startTime} onChange={handleChange} className="form-control" required />
         </div>
 
-        
         <div className="mb-3">
           <label>End Time:</label>
           <input type="time" name="endTime" value={eventData.endTime} onChange={handleChange} className="form-control" required />
         </div>
 
-        
         <div className="mb-3">
           <label>Location:</label>
           <input type="text" name="location" value={eventData.location} onChange={handleChange} className="form-control" required />
         </div>
 
-        
         <div className="mb-3">
           <label>Description:</label>
           <textarea name="description" value={eventData.description} onChange={handleChange} className="form-control" required />
         </div>
 
-     
         <div className="mb-3">
           <label>Category:</label>
           <input type="text" name="category" value={eventData.category} onChange={handleChange} className="form-control" required />
         </div>
 
-        
         <div className="mb-3">
           <label>Banner Image:</label>
           <input type="file" onChange={handleImageChange} className="form-control" />
           {preview && <img src={preview} alt="Preview" className="mt-3" style={{ maxWidth: '100%', height: 'auto' }} />}
         </div>
 
-        
-        <div className="mb-3">
-          <label>Ticket Type:</label>
-          <select name="ticketType" value={eventData.ticketType} onChange={handleChange} className="form-control">
-            <option value="VIP">VIP</option>
-            <option value="Early Bird">Early Bird</option>
-            <option value="General">General</option>
-          </select>
-        </div>
+        <h4>Ticket Details</h4>
 
-        
-        <div className="mb-3">
-          <label>Total Tickets Available:</label>
-          <input type="number" name="quantity" value={eventData.quantity} onChange={handleChange} className="form-control" min="1" required />
-        </div>
+        {['vip', 'earlyBird', 'general'].map((type) => (
+          <div key={type} className="border p-3 mb-3">
+            <h5>{type === 'vip' ? 'VIP' : type === 'earlyBird' ? 'Early Bird' : 'General'}</h5>
+            <div className="mb-3">
+              <label>Tickets Available:</label>
+              <input
+                type="number"
+                min="0"
+                value={eventData.tickets[type].quantity}
+                onChange={(e) => handleTicketChange(type, 'quantity', e.target.value)}
+                className="form-control"
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label>Ticket Price:</label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={eventData.tickets[type].price}
+                onChange={(e) => handleTicketChange(type, 'price', e.target.value)}
+                className="form-control"
+                required
+              />
+            </div>
+          </div>
+        ))}
 
-        <div className="mb-3">
-          <label>Ticket Price:</label>
-          <input type="number" name="price" value={eventData.price} onChange={handleChange} className="form-control" min="0" step="0.01" required />
-        </div>
-
-       
         <div className="mb-3">
           <label>Organizer Name:</label>
           <input type="text" name="organizerName" value={eventData.organizerName} onChange={handleChange} className="form-control" required />
