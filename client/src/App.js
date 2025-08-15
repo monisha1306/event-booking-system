@@ -10,6 +10,7 @@ import OrganizerTransactions from './pages/OrganizerTransactions';
 import AttendeeEventList from './pages/AttendeeEventList';
 import ViewEvent from './pages/ViewEvent';
 import LandingPage from './components/LandingPage';
+import Signup from './components/Signup';
 
 
 
@@ -26,6 +27,7 @@ function App() {
         <Route path="/organizer/transactions" element={<OrganizerTransactions />} />
         <Route path="/attendee/events" element={<AttendeeEventList />} />
         <Route path="/view-event/:id" element={<ViewEvent />} />
+        <Route path="/Signup" element={<Signup/>}/>
 
       </Routes>
     </Router>

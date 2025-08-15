@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 import { Form, Button, Container, Alert, Card, Spinner } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './Login.css';
+import './Login.css'; 
+
 
 const Signup = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    role: '' 
   });
 
   const [error, setError] = useState('');
@@ -32,7 +34,8 @@ const Signup = () => {
 
     const { name, email, password, confirmPassword } = formData;
 
-    if (password !== confirmPassword) {
+    
+    if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       setLoading(false);
       return;
@@ -74,6 +77,7 @@ const Signup = () => {
           {success && <Alert variant="success" className="text-center">{success}</Alert>}
 
           <Form onSubmit={handleSubmit}>
+            {/* Full Name */}
             <Form.Group className="mb-3">
               <Form.Label>Full Name</Form.Label>
               <Form.Control
@@ -86,6 +90,7 @@ const Signup = () => {
               />
             </Form.Group>
 
+            {/* Email */}
             <Form.Group className="mb-3">
               <Form.Label>Email</Form.Label>
               <Form.Control
@@ -98,6 +103,7 @@ const Signup = () => {
               />
             </Form.Group>
 
+            {/* Password */}
             <Form.Group className="mb-3">
               <Form.Label>Password</Form.Label>
               <Form.Control
@@ -110,6 +116,7 @@ const Signup = () => {
               />
             </Form.Group>
 
+            {/* Confirm Password */}
             <Form.Group className="mb-3">
               <Form.Label>Confirm Password</Form.Label>
               <Form.Control
@@ -122,17 +129,39 @@ const Signup = () => {
               />
             </Form.Group>
 
+            {/* Role Selection */}
+            <Form.Group className="mb-3">
+              <Form.Label>Registering as:</Form.Label>
+              <div>
+                <Form.Check
+                  type="radio"
+                  label="Organizer"
+                  name="role"
+                  value="Organizer"
+                  checked={formData.role === 'Organizer'}
+                  onChange={handleChange}
+                  inline
+                />
+                <Form.Check
+                  type="radio"
+                  label="Attendee"
+                  name="role"
+                  value="Attendee"
+                  checked={formData.role === 'Attendee'}
+                  onChange={handleChange}
+                  inline
+                />
+              </div>
+            </Form.Group>
+
+            {/* Submit Button */}
             <div className="d-grid gap-2 mb-4">
-              <Button 
-                variant="primary" 
-                type="submit" 
-                size="lg"
-                disabled={loading}
-              >
-                {loading ? <Spinner animation="border" size="sm" /> : 'Sign Up'}
+              <Button variant="primary" type="submit" size="lg">
+                Sign Up
               </Button>
             </div>
 
+            {/* Login Link */}
             <div className="text-center">
               Already have an account? <Link to="/login">LogIn</Link>
             </div>
