@@ -1,0 +1,48 @@
+/* Container & Card */
+.login-container {
+  max-width: 450px;
+  margin: 40px auto;
+}
+
+.login-card {
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+/* Headings */
+.login-card h2 {
+  font-weight: 700;
+  color: #0d6efd; /* Bootstrap primary color */
+}
+
+/* Radio Buttons */
+.form-check-inline {
+  margin-right: 15px;
+}
+
+.form-check-label {
+  font-weight: 500;
+}
+
+/* Error Messages */
+.text-danger.small {
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+/* Dynamic Field Animation */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Submit Button */
+button[type="submit"] {
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
