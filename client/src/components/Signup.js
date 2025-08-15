@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { Form, Button, Container, Alert, Card, Spinner } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
+<<<<<<< HEAD
+import './Login.css';
+=======
 import axios from 'axios';
 import './Login.css'; 
 
+>>>>>>> d9372cb8055f1926a0c4a3708d4516073e15e9b1
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -11,23 +15,66 @@ const Signup = () => {
     email: '',
     password: '',
     confirmPassword: '',
+<<<<<<< HEAD
+    role: '',
+    organizationName: '' // Only for organizer
+  });
+
+  const [errors, setErrors] = useState({});
+=======
     role: '' 
   });
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+>>>>>>> d9372cb8055f1926a0c4a3708d4516073e15e9b1
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value
+    }));
+
+    // Live validation for each field
+    validateField(name, value);
+  };
+
+  const validateField = (name, value) => {
+    let newErrors = { ...errors };
+
+    if (name === 'name' && value.trim() === '') {
+      newErrors.name = 'Name is required';
+    } else if (name === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      newErrors.email = 'Invalid email address';
+    } else if (name === 'password' && value.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    } else if (name === 'confirmPassword' && value !== formData.password) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    } else if (name === 'role' && value === '') {
+      newErrors.role = 'Please select a role';
+    } else if (name === 'organizationName' && formData.role === 'Organizer' && value.trim() === '') {
+      newErrors.organizationName = 'Organization name is required for organizers';
+    } else {
+      delete newErrors[name];
+    }
+
+    setErrors(newErrors);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+<<<<<<< HEAD
+
+    // Validate all fields at once
+    Object.keys(formData).forEach((field) => validateField(field, formData[field]));
+
+    if (Object.keys(errors).length > 0) {
+      return; // Don't submit if there are errors
+=======
     setError('');
     setSuccess('');
     setLoading(true);
@@ -39,6 +86,7 @@ const Signup = () => {
       setError('Passwords do not match');
       setLoading(false);
       return;
+>>>>>>> d9372cb8055f1926a0c4a3708d4516073e15e9b1
     }
 
     if (formData.role === "Organizer") {
@@ -82,11 +130,19 @@ const Signup = () => {
       <Card className="login-card">
         <Card.Body>
           <h2 className="text-center mb-4">Create Your Account</h2>
+<<<<<<< HEAD
+          {Object.keys(errors).length > 0 && (
+            <Alert variant="danger" className="text-center">
+              Please fix the errors before submitting
+            </Alert>
+          )}
+=======
           {error && <Alert variant="danger" className="text-center">{error}</Alert>}
           {success && <Alert variant="success" className="text-center">{success}</Alert>}
+>>>>>>> d9372cb8055f1926a0c4a3708d4516073e15e9b1
 
           <Form onSubmit={handleSubmit}>
-            {/* Full Name */}
+            {/* Name */}
             <Form.Group className="mb-3">
               <Form.Label>Full Name</Form.Label>
               <Form.Control
@@ -95,8 +151,9 @@ const Signup = () => {
                 placeholder="Enter your name"
                 value={formData.name}
                 onChange={handleChange}
-                required
+                isInvalid={!!errors.name}
               />
+              <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
             </Form.Group>
 
             {/* Email */}
@@ -108,8 +165,9 @@ const Signup = () => {
                 placeholder="Enter email"
                 value={formData.email}
                 onChange={handleChange}
-                required
+                isInvalid={!!errors.email}
               />
+              <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
             </Form.Group>
 
             {/* Password */}
@@ -121,8 +179,9 @@ const Signup = () => {
                 placeholder="Create password"
                 value={formData.password}
                 onChange={handleChange}
-                required
+                isInvalid={!!errors.password}
               />
+              <Form.Control.Feedback type="invalid">{errors.password}</Form.Control.Feedback>
             </Form.Group>
 
             {/* Confirm Password */}
@@ -134,8 +193,9 @@ const Signup = () => {
                 placeholder="Confirm password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                required
+                isInvalid={!!errors.confirmPassword}
               />
+              <Form.Control.Feedback type="invalid">{errors.confirmPassword}</Form.Control.Feedback>
             </Form.Group>
 
             {/* Role Selection */}
@@ -150,6 +210,7 @@ const Signup = () => {
                   checked={formData.role === 'Organizer'}
                   onChange={handleChange}
                   inline
+                  isInvalid={!!errors.role}
                 />
                 <Form.Check
                   type="radio"
@@ -159,9 +220,27 @@ const Signup = () => {
                   checked={formData.role === 'Attendee'}
                   onChange={handleChange}
                   inline
+                  isInvalid={!!errors.role}
                 />
               </div>
+              {errors.role && <div className="text-danger small">{errors.role}</div>}
             </Form.Group>
+
+            {/* Extra Field for Organizers */}
+            {formData.role === 'Organizer' && (
+              <Form.Group className="mb-3">
+                <Form.Label>Organization Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="organizationName"
+                  placeholder="Enter your organization name"
+                  value={formData.organizationName}
+                  onChange={handleChange}
+                  isInvalid={!!errors.organizationName}
+                />
+                <Form.Control.Feedback type="invalid">{errors.organizationName}</Form.Control.Feedback>
+              </Form.Group>
+            )}
 
             {/* Submit Button */}
             <div className="d-grid gap-2 mb-4">
@@ -170,7 +249,6 @@ const Signup = () => {
               </Button>
             </div>
 
-            {/* Login Link */}
             <div className="text-center">
               Already have an account? <Link to="/login">LogIn</Link>
             </div>
