@@ -129,17 +129,16 @@ const Signup = () => {
     <Container className="login-container">
       <Card className="login-card">
         <Card.Body>
-          <h2 className="text-center mb-4">Create Your Account</h2>
-<<<<<<< HEAD
+          <h2 className="text-center mb-4">Create Your Account</h2>D
           {Object.keys(errors).length > 0 && (
             <Alert variant="danger" className="text-center">
               Please fix the errors before submitting
             </Alert>
           )}
-=======
+
           {error && <Alert variant="danger" className="text-center">{error}</Alert>}
           {success && <Alert variant="success" className="text-center">{success}</Alert>}
->>>>>>> d9372cb8055f1926a0c4a3708d4516073e15e9b1
+
 
           <Form onSubmit={handleSubmit}>
             {/* Name */}
