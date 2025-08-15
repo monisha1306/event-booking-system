@@ -1,0 +1,98 @@
+.landing-page {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.hero-section {
+  padding: 5rem 0;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.hero-section h1 {
+  font-weight: 700;
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  color: #212529;
+}
+
+.hero-section .lead {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+  color: #495057;
+}
+
+.hero-image {
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.hero-image:hover {
+  transform: scale(1.02);
+}
+
+.cta-buttons {
+  margin-top: 2rem;
+}
+
+.featured-events {
+  background-color: #fff;
+}
+
+.featured-events .card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.featured-events .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.event-meta {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.event-meta span {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.features-section .feature-icon {
+  color: #0d6efd;
+}
+
+.features-section h3 {
+  margin: 1rem 0;
+  color: #212529;
+}
+
+.features-section p {
+  color: #6c757d;
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    text-align: center;
+    padding: 3rem 0;
+  }
+  
+  .hero-section h1 {
+    font-size: 2.5rem;
+  }
+  
+  .cta-buttons {
+    justify-content: center;
+  }
+  
+  .hero-image {
+    margin-top: 2rem;
+  }
+}
+/* For the event card image */
+.event-card-img {
+  height: 200px; /* Fixed height */
+  width: 100%;
+  object-fit: cover; /* Ensures no distortion */
+  object-position: center; /* Focus on image center */
+}
