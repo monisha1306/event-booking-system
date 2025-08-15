@@ -6,7 +6,7 @@ class TicketTierInline(admin.TabularInline):
     extra = 1
 
 class EventAdmin(admin.ModelAdmin):
-    list_display = ('title', 'organizer', 'date', 'location', 'is_approved')
+    list_display = ('title', 'organizer_name', 'organizer_contact', 'date', 'start_time', 'end_time', 'category', 'is_approved')
     inlines = [TicketTierInline]
 
 admin.site.register(Organizer)

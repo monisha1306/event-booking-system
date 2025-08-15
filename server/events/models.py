@@ -12,11 +12,13 @@ class Organizer(models.Model):
         return self.organization_name
     
 class Event(models.Model):
-    organizer = models.ForeignKey(Organizer, on_delete=models.CASCADE, related_name="events", null=True,blank=True  )
+    organizer_name = models.CharField(max_length=255, null=True, blank=True)
+    organizer_contact = models.CharField(max_length=20, null=True, blank=True)
     title = models.CharField(max_length=255)
     description = models.TextField()
     date = models.DateField()
-    time = models.TimeField()
+    start_time = models.TimeField(null=True, blank=True)
+    end_time = models.TimeField(null=True, blank=True)
     location = models.CharField(max_length=255,null=True)
     category = models.CharField(max_length=100)
     banner_image = models.ImageField(upload_to="event_banners/", blank=True, null=True)
