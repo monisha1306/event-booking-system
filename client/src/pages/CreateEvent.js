@@ -14,19 +14,19 @@ export default function CreateEvent() {
     location: '',
     description: '',
     category: '',
-<<<<<<< HEAD
+
     banner: null, // Store file, not base64
     ticketType: 'VIP',
     quantity: '',
     price: '',
-=======
+
     banner: '',
     tickets: {
       vip: { quantity: '', price: '' },
       earlyBird: { quantity: '', price: '' },
       general: { quantity: '', price: '' }
     },
->>>>>>> d9372cb8055f1926a0c4a3708d4516073e15e9b1
+
     organizerName: '',
     organizerContact: ''
   });
