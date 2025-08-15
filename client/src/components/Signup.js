@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { Form, Button, Container, Alert, Card } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import './Login.css'; // Reusing the same CSS as login
+import './Login.css'; // Reusing same CSS as login
 
 const Signup = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    role: '' // New field for Organizer or Attendee
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -22,14 +23,17 @@ const Signup = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Basic validation
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
     }
-    // TODO: Add your signup API call here
+    if (!formData.role) {
+      setError('Please select whether you are an Organizer or Attendee');
+      return;
+    }
+
     console.log('Signup data:', formData);
-    navigate('/dashboard'); // Redirect after successful signup
+    navigate('/dashboard');
   };
 
   return (
@@ -40,6 +44,7 @@ const Signup = () => {
           {error && <Alert variant="danger" className="text-center">{error}</Alert>}
           
           <Form onSubmit={handleSubmit}>
+            {/* Full Name */}
             <Form.Group className="mb-3">
               <Form.Label>Full Name</Form.Label>
               <Form.Control
@@ -52,6 +57,7 @@ const Signup = () => {
               />
             </Form.Group>
 
+            {/* Email */}
             <Form.Group className="mb-3">
               <Form.Label>Email</Form.Label>
               <Form.Control
@@ -64,6 +70,7 @@ const Signup = () => {
               />
             </Form.Group>
 
+            {/* Password */}
             <Form.Group className="mb-3">
               <Form.Label>Password</Form.Label>
               <Form.Control
@@ -76,6 +83,7 @@ const Signup = () => {
               />
             </Form.Group>
 
+            {/* Confirm Password */}
             <Form.Group className="mb-3">
               <Form.Label>Confirm Password</Form.Label>
               <Form.Control
@@ -88,16 +96,39 @@ const Signup = () => {
               />
             </Form.Group>
 
+            {/* Role Selection */}
+            <Form.Group className="mb-3">
+              <Form.Label>Registering as:</Form.Label>
+              <div>
+                <Form.Check
+                  type="radio"
+                  label="Organizer"
+                  name="role"
+                  value="Organizer"
+                  checked={formData.role === 'Organizer'}
+                  onChange={handleChange}
+                  inline
+                />
+                <Form.Check
+                  type="radio"
+                  label="Attendee"
+                  name="role"
+                  value="Attendee"
+                  checked={formData.role === 'Attendee'}
+                  onChange={handleChange}
+                  inline
+                />
+              </div>
+            </Form.Group>
+
+            {/* Submit Button */}
             <div className="d-grid gap-2 mb-4">
-              <Button 
-                variant="primary" 
-                type="submit" 
-                size="lg"
-              >
+              <Button variant="primary" type="submit" size="lg">
                 Sign Up
               </Button>
             </div>
 
+            {/* Login Link */}
             <div className="text-center">
               Already have an account? <Link to="/login">LogIn</Link>
             </div>
