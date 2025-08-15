@@ -20,7 +20,7 @@ function App() {
         <Route path="/" element={<EventList />} />
         <Route path="/book/:eventId" element={<BookEvent />} />
         <Route path="/my-transactions" element={<AttendeeTransactions />} />
-        <Route path="/organizer/create" element={<CreateEvent />} />
+        <Route path="/organizer/create" element={<CreateEvent />} />;
         <Route path="/organizer/edit/:eventId" element={<EditEvent />} />
         <Route path="/organizer/transactions" element={<OrganizerTransactions />} />
         <Route path="/attendee/events" element={<AttendeeEventList />} />
