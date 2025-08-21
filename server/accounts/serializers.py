@@ -6,7 +6,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, validators=[validate_password])
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'password', 'role','phone','profile_image']
+        fields = ['username', 'email', 'password', 'role','phone']
 
     def create(self, validated_data):
         user = CustomUser.objects.create_user(
@@ -16,16 +16,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             role=validated_data.get('role', 'attendee'),
             phone=validated_data.get('phone',' '),
         )
-        return user
-<<<<<<< HEAD
-class ProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomUser
-        fields = ['username', 'email', 'role', 'phone', 'profile_image']
-=======
-    
-class ProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomUser
-        fields = ['username', 'email', 'first_name', 'last_name', 'role', 'phone', 'profile_image']
->>>>>>> 90e5ec4 (Restoring changes)
+        return user 
+
+

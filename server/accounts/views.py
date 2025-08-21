@@ -5,7 +5,9 @@ from rest_framework.permissions import AllowAny
 from .models import CustomUser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from .serializers import ProfileSerializer
+# from .serializers import ProfileSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.views import APIView
 
 
@@ -14,12 +16,12 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
 
-class ProfileView(generics.RetrieveUpdateAPIView):
-    serializer_class = ProfileSerializer
-    permission_classes = [IsAuthenticated]
+# class ProfileView(generics.RetrieveUpdateAPIView):
+#     serializer_class = ProfileSerializer
+#     permission_classes = [IsAuthenticated]
 
-    def get_object(self):
-        return self.request.user
+#     def get_object(self):
+#         return self.request.user
 
 class LandingPageView(APIView):
     permission_classes = [AllowAny]
@@ -34,3 +36,21 @@ class LandingPageView(APIView):
                 "profile": "/api/accounts/profile/"
             }
         })
+    
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        # Add custom claims
+        token['role'] = user.role  # assuming 'role' field in User model
+        return token
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data['role'] = self.user.role
+        return data
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
+
+

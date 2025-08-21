@@ -1,184 +1,171 @@
-import React, { useState } from 'react';
-import { Form, Button, Container, Alert, Card } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import './Login.css';
+import React, { useState } from "react";
+import { Container, Card, Form, Button, Alert, Spinner } from "react-bootstrap";
+import axios from "axios";
+import "./Login.css";
+import { useNavigate } from 'react-router-dom';
 
-const Signup = () => {
+
+function Signup() {
   const [formData, setFormData] = useState({
-    username: '',
-    phone: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    role: ''
+    username: "",
+    email: "",
+    password: "",
+    role: "attendee",
+    phone: "",
   });
 
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [message, setMessage] = useState("");
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
+    setMessage("");
+    setErrors({});
     setLoading(true);
 
-    const { username, phone, email, password, confirmPassword, role } = formData;
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      setLoading(false);
-      return;
-    }
-
     try {
-      await axios.post('http://localhost:8000/api/accounts/Signup/', {
-        username,
-        phone,
-        email,
-        password,
-        role
+      const res = await axios.post(
+        "http://localhost:8000/api/accounts/register/",
+        formData
+      );
+      setMessage("Registration successful!");
+      setFormData({
+        username: "",
+        email: "",
+        password: "",
+        role: "attendee",
+        phone: "",
       });
-
-      setSuccess('Signup successful! Redirecting...');
-      setLoading(false);
-
       setTimeout(() => {
-        navigate('/login');
-      }, 2000);
-    } catch (err) {
-      console.error(err);
-      setLoading(false);
+        navigate("/login");
+      }, 1500);
+      
+    } 
+    
+    catch (err) {
       if (err.response && err.response.data) {
-        setError(err.response.data.detail || 'Signup failed. Please try again.');
+        setErrors(err.response.data);
       } else {
-        setError('Server error. Please try again later.');
+        setMessage("Something went wrong. Please try again.");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Container className="login-container">
-      <Card className="login-card">
+    <Container
+      className="d-flex justify-content-center align-items-center"
+      style={{ minHeight: "100vh" }}
+    >
+      <Card className="p-4 shadow-lg" style={{ width: "100%", maxWidth: "450px" }}>
         <Card.Body>
           <h2 className="text-center mb-4">Create Your Account</h2>
-          {error && <Alert variant="danger" className="text-center">{error}</Alert>}
-          {success && <Alert variant="success" className="text-center">{success}</Alert>}
+
+          {message && <Alert variant="success">{message}</Alert>}
 
           <Form onSubmit={handleSubmit}>
-            {/* Username */}
             <Form.Group className="mb-3">
               <Form.Label>Username</Form.Label>
               <Form.Control
                 type="text"
                 name="username"
-                placeholder="Enter your username"
                 value={formData.username}
                 onChange={handleChange}
-                required
+                placeholder="Enter your username"
+                isInvalid={!!errors.username}
               />
+              <Form.Control.Feedback type="invalid">
+                {errors.username}
+              </Form.Control.Feedback>
             </Form.Group>
 
-            {/* Phone */}
-            <Form.Group className="mb-3">
-              <Form.Label>Phone</Form.Label>
-              <Form.Control
-                type="text"
-                name="phone"
-                placeholder="Enter your phone number"
-                value={formData.phone}
-                onChange={handleChange}
-                required
-              />
-            </Form.Group>
-
-            {/* Email */}
             <Form.Group className="mb-3">
               <Form.Label>Email</Form.Label>
               <Form.Control
                 type="email"
                 name="email"
-                placeholder="Enter email"
                 value={formData.email}
                 onChange={handleChange}
-                required
+                placeholder="Enter your email"
+                isInvalid={!!errors.email}
               />
+              <Form.Control.Feedback type="invalid">
+                {errors.email}
+              </Form.Control.Feedback>
             </Form.Group>
 
-            {/* Password */}
             <Form.Group className="mb-3">
               <Form.Label>Password</Form.Label>
               <Form.Control
                 type="password"
                 name="password"
-                placeholder="Create password"
                 value={formData.password}
                 onChange={handleChange}
-                required
+                placeholder="Create a password"
+                isInvalid={!!errors.password}
               />
+              <Form.Control.Feedback type="invalid">
+                {errors.password}
+              </Form.Control.Feedback>
             </Form.Group>
 
-            {/* Confirm Password */}
             <Form.Group className="mb-3">
-              <Form.Label>Confirm Password</Form.Label>
-              <Form.Control
-                type="password"
-                name="confirmPassword"
-                placeholder="Confirm password"
-                value={formData.confirmPassword}
+              <Form.Label>Role</Form.Label>
+              <Form.Select
+                name="role"
+                value={formData.role}
                 onChange={handleChange}
-                required
-              />
+                isInvalid={!!errors.role}
+              >
+                <option value="attendee">Attendee</option>
+                <option value="organizer">Organizer</option>
+                <option value="admin">Admin</option>
+              </Form.Select>
+              <Form.Control.Feedback type="invalid">
+                {errors.role}
+              </Form.Control.Feedback>
             </Form.Group>
 
-            {/* Role Selection */}
             <Form.Group className="mb-3">
-              <Form.Label>Registering as:</Form.Label>
-              <div>
-                <Form.Check
-                  type="radio"
-                  label="Organizer"
-                  name="role"
-                  value="Organizer"
-                  checked={formData.role === 'Organizer'}
-                  onChange={handleChange}
-                  inline
-                />
-                <Form.Check
-                  type="radio"
-                  label="Attendee"
-                  name="role"
-                  value="Attendee"
-                  checked={formData.role === 'Attendee'}
-                  onChange={handleChange}
-                  inline
-                />
-              </div>
+              <Form.Label>Phone (optional)</Form.Label>
+              <Form.Control
+                type="text"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="Enter your phone number"
+                isInvalid={!!errors.phone}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.phone}
+              </Form.Control.Feedback>
             </Form.Group>
 
-            <div className="d-grid gap-2 mb-4">
-              <Button variant="primary" type="submit" size="lg" disabled={loading}>
-                {loading ? 'Signing up...' : 'Sign Up'}
-              </Button>
-            </div>
-
-            <div className="text-center">
-              Already have an account? <Link to="/login">Log In</Link>
-            </div>
+            <Button variant="primary" type="submit" className="w-100" disabled={loading}>
+              {loading ? (
+                <>
+                  <Spinner animation="border" size="sm" /> Signing Up...
+                </>
+              ) : (
+                "Sign Up"
+              )}
+            </Button>
           </Form>
+
+          <div className="text-center mt-3">
+            Already have an account? <a href="/login">Log In</a>
+          </div>
         </Card.Body>
       </Card>
     </Container>
   );
-};
+}
 
 export default Signup;

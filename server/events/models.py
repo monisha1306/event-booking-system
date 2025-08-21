@@ -21,7 +21,7 @@ class Event(models.Model):
     end_time = models.TimeField(null=True, blank=True)
     location = models.CharField(max_length=255,null=True)
     category = models.CharField(max_length=100)
-    banner_image = models.ImageField(upload_to="event_banners/", blank=True, null=True)
+    banner_image = models.ImageField(upload_to="event_banners/", null=True, blank=True)
 
     is_approved = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)

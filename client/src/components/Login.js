@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Form, Button, Alert, Card, Container, Row, Col } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
-const LoginPage = () => {
-  const [email, setEmail] = useState('');
+const Login = ({ setIsLoggedIn, setRole }) => {
+  const [username, setUsername] = useState(''); // ✅ Changed from email to username
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -12,18 +12,16 @@ const LoginPage = () => {
     e.preventDefault();
     setError('');
 
-    if (!email || !password) {
-      setError('Please enter both email and password');
+    if (!username || !password) {
+      setError('Please enter both username and password');
       return;
     }
 
     try {
       const response = await fetch('http://127.0.0.1:8000/api/accounts/login/', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }), // ✅ sending username instead of email
       });
 
       const data = await response.json();
@@ -31,8 +29,12 @@ const LoginPage = () => {
       if (response.ok) {
         localStorage.setItem('access', data.access);
         localStorage.setItem('refresh', data.refresh);
+        localStorage.setItem('role', data.role);
 
-        navigate('/dashboard');
+        setIsLoggedIn(true);
+        setRole(data.role);
+
+        navigate('/');
       } else {
         setError(data.detail || 'Login failed');
       }
@@ -53,13 +55,14 @@ const LoginPage = () => {
               {error && <Alert variant="danger">{error}</Alert>}
 
               <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3" controlId="formEmail">
-                  <Form.Label>Email address</Form.Label>
+                {/* ✅ Username field instead of Email */}
+                <Form.Group className="mb-3" controlId="formUsername">
+                  <Form.Label>Username</Form.Label>
                   <Form.Control
-                    type="email"
-                    placeholder="Enter email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    type="text"
+                    placeholder="Enter username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     required
                   />
                 </Form.Group>
@@ -78,6 +81,12 @@ const LoginPage = () => {
                 <Button variant="primary" type="submit" className="w-100">
                   Login
                 </Button>
+
+                {/* Forgot Password link */}
+                <div className="text-center mt-3">
+                  <Link to="/forgot-password">Forgot your password?</Link>
+                </div>
+
               </Form>
             </Card.Body>
           </Card>
@@ -87,4 +96,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default Login;

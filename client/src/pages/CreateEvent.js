@@ -56,71 +56,55 @@ export default function CreateEvent() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
+  const formData = new FormData();
+  formData.append("title", eventData.title);
+  formData.append("date", eventData.date);
+  formData.append("start_time", eventData.startTime);
+  formData.append("end_time", eventData.endTime);
+  formData.append("location", eventData.location);
+  formData.append("description", eventData.description);
+  formData.append("category", eventData.category);
 
-    const formData = new FormData();
-    formData.append("title", eventData.title);
-    formData.append("date", eventData.date);
-    formData.append("start_time", eventData.startTime);
-    formData.append("end_time", eventData.endTime);
-    formData.append("location", eventData.location);
-    formData.append("description", eventData.description);
-    formData.append("category", eventData.category);
-    if (eventData.banner) {
-      formData.append("banner", eventData.banner); // Image file
+  if (eventData.banner) {
+    formData.append("banner_image", eventData.banner); // must match Django model field
+  }
+
+  formData.append("organizer_name", eventData.organizerName);
+  formData.append("organizer_contact", eventData.organizerContact);
+
+  // ✅ Convert tickets object into array for backend
+  const ticketTiersArray = [
+    { name: "VIP", price: eventData.tickets.vip.price, quantity: eventData.tickets.vip.quantity },
+    { name: "Early Bird", price: eventData.tickets.earlyBird.price, quantity: eventData.tickets.earlyBird.quantity },
+    { name: "General", price: eventData.tickets.general.price, quantity: eventData.tickets.general.quantity }
+  ];
+
+  // Append as JSON string
+  formData.append("ticket_tiers", JSON.stringify(ticketTiersArray));
+
+  try {
+    const response = await fetch("http://localhost:8000/api/events/", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (response.ok) {
+      alert("Event created successfully!");
+      navigate("/");
+    } else {
+      const errData = await response.json();
+      console.error("Error:", errData);
+      alert("Failed to create event");
     }
-    formData.append("ticket_type", eventData.ticketType);
-    formData.append("quantity", eventData.quantity);
-    formData.append("price", eventData.price);
-    formData.append("organizer_name", eventData.organizerName);
-    formData.append("organizer_contact", eventData.organizerContact);
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Server error");
+  }
+};
 
-    // Combine time and AM/PM for saving
-    const formattedStartTime = `${eventData.startTime} ${eventData.startAmPm}`;
-    const formattedEndTime = `${eventData.endTime} ${eventData.endAmPm}`;
-
-    // Calculate total tickets and total revenue
-    const totalTickets =
-      Number(eventData.tickets.vip.quantity || 0) +
-      Number(eventData.tickets.earlyBird.quantity || 0) +
-      Number(eventData.tickets.general.quantity || 0);
-
-    const totalRevenue =
-      (Number(eventData.tickets.vip.quantity || 0) * Number(eventData.tickets.vip.price || 0)) +
-      (Number(eventData.tickets.earlyBird.quantity || 0) * Number(eventData.tickets.earlyBird.price || 0)) +
-      (Number(eventData.tickets.general.quantity || 0) * Number(eventData.tickets.general.price || 0));
-
-    const newEvent = {
-      id: Date.now(),
-      ...eventData,
-      startTime: formattedStartTime,
-      endTime: formattedEndTime,
-      totalTickets,
-      totalRevenue
-    };
-
-
-    try {
-      const response = await fetch("http://localhost:8000/api/events/", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (response.ok) {
-        alert("Event created successfully!");
-        navigate("/"); // Change redirect as needed
-      } else {
-        const errData = await response.json();
-        console.error("Error:", errData);
-        alert("Failed to create event");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Server error");
-    }
-  };
 
   return (
     <div className="container mt-5">

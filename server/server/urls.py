@@ -19,6 +19,9 @@ from django.urls import path,include
 from rest_framework.routers import DefaultRouter
 from events.views import EventViewSet, TicketTierViewSet
 from accounts.views import LandingPageView
+from django.conf import settings
+from django.conf.urls.static import static
+
 router = DefaultRouter()
 router.register(r'events', EventViewSet)
 router.register(r'tickets', TicketTierViewSet)
@@ -30,5 +33,6 @@ urlpatterns = [
     path('api/accounts/',include('accounts.urls')),
     path('api/booking/', include('booking.urls')),
 
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 

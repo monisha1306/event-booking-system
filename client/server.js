@@ -1,8 +1,12 @@
 const express = require("express");
 const mysql = require("mysql2");
 const cors = require("cors");
+const path = require("path");
 
 const app = express();
+
+// ✅ Serve static files from "event_banners" folder
+app.use("/event_banners", express.static(path.join(__dirname, "event_banners")));
 app.use(cors());
 
 const db = mysql.createConnection({
@@ -13,14 +17,32 @@ const db = mysql.createConnection({
 });
 
 db.connect(err => {
-  if (err) throw err;
+  if (err) {
+    console.error("❌ MySQL Connection Failed:", err);
+    return;
+  }
   console.log("✅ MySQL Connected");
 });
 
+// ✅ Get events and fix image URL
 app.get("/events", (req, res) => {
   db.query("SELECT * FROM events_event", (err, result) => {
-    if (err) throw err;
-    res.json(result);
+    if (err) {
+      console.error("❌ DB Query Error:", err);
+      return res.status(500).send("DB Error");
+    }
+
+    // Add full URL for banner_image
+    const updatedResults = result.map(event => {
+      return {
+        ...event,
+        banner_image: event.banner_image
+          ? `http://localhost:5000/${event.banner_image}`
+          : null,
+      };
+    });
+
+    res.json(updatedResults);
   });
 });
 
