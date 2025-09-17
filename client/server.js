@@ -24,6 +24,20 @@ db.connect(err => {
   console.log("✅ MySQL Connected");
 });
 
+app.get("/tickettier/:eventId", (req, res) => {
+  const eventId = req.params.eventId;
+  db.query(
+    "SELECT * FROM events_tickettier WHERE event_id = ?",
+    [eventId],
+    (err, results) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Database error" });
+      }
+      res.json(results);
+    }
+  );
+});
 // ✅ Get events and fix image URL
 app.get("/events", (req, res) => {
   db.query("SELECT * FROM events_event", (err, result) => {

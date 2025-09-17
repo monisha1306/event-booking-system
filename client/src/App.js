@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import EventList from './pages/EventList';
+import TicketConfirmation from './pages/TicketConfirmation';
 import BookEvent from './pages/BookEvent';
 import AttendeeTransactions from './pages/AttendeeTransactions';
 import CreateEvent from './pages/CreateEvent';
@@ -12,6 +13,8 @@ import ViewEvent from './pages/ViewEvent';
 import LandingPage from './components/LandingPage';
 import Signup from './components/Signup';
 import Login from './components/Login';
+import SeatingLayout from './pages/SeatingLayout';
+import EventDetails from './pages/EventDetails';
 //import ForgotPassword from './pages/ForgotPassword';
 
 function App() {
@@ -51,6 +54,10 @@ function App() {
         <Route path="/view-event/:id" element={<ViewEvent />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setRole={setRole} />} />
+        <Route path="/ticket-confirmation" element={<TicketConfirmation />} />
+        <Route path="/seating/:id" element={<SeatingLayout />} />
+        <Route path="/events/:id" element={<EventDetails/>} />
+
       </Routes>
     </Router>
   );

@@ -37,6 +37,14 @@ export default function CreateEvent() {
     const { name, value } = e.target;
     setEventData({ ...eventData, [name]: value });
   };
+  const convertTo24Hour = (time, ampm) => {
+  if (!time) return '';
+  let [hours, minutes] = time.split(':');
+  hours = parseInt(hours);
+  if (ampm === 'PM' && hours !== 12) hours += 12;
+  if (ampm === 'AM' && hours === 12) hours = 0;
+  return `${hours.toString().padStart(2,'0')}:${minutes}:00`; // Django TimeField format
+};
 
   const handleTicketChange = (type, field, value) => {
     setEventData((prev) => ({
@@ -62,8 +70,8 @@ export default function CreateEvent() {
   const formData = new FormData();
   formData.append("title", eventData.title);
   formData.append("date", eventData.date);
-  formData.append("start_time", eventData.startTime);
-  formData.append("end_time", eventData.endTime);
+  formData.append("start_time", convertTo24Hour(eventData.startTime, eventData.startAmPm));
+  formData.append("end_time", convertTo24Hour(eventData.endTime, eventData.endAmPm));
   formData.append("location", eventData.location);
   formData.append("description", eventData.description);
   formData.append("category", eventData.category);
@@ -163,25 +171,6 @@ export default function CreateEvent() {
           {preview && <img src={preview} alt="Preview" className="mt-3" style={{ maxWidth: '100%', height: 'auto' }} />}
         </div>
 
-
-        <div className="mb-3">
-          <label>Ticket Type:</label>
-          <select name="ticketType" value={eventData.ticketType} onChange={handleChange} className="form-control">
-            <option value="VIP">VIP</option>
-            <option value="Early Bird">Early Bird</option>
-            <option value="General">General</option>
-          </select>
-        </div>
-
-        <div className="mb-3">
-          <label>Total Tickets Available:</label>
-          <input type="number" name="quantity" value={eventData.quantity} onChange={handleChange} className="form-control" min="1" required />
-        </div>
-
-        <div className="mb-3">
-          <label>Ticket Price:</label>
-          <input type="number" name="price" value={eventData.price} onChange={handleChange} className="form-control" min="0" step="0.01" required />
-        </div>
 
         <h4>Ticket Details</h4>
         {['vip', 'earlyBird', 'general'].map((type) => (

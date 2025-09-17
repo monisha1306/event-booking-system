@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function AttendeeEventList() {
+  const navigate = useNavigate();
   const [events, setEvents] = useState([]);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
@@ -22,6 +24,16 @@ export default function AttendeeEventList() {
     if (!dateString) return '';
     return new Date(dateString).toLocaleDateString();
   };
+  const formatTime = (timeString) => {
+  if (!timeString) return '';
+  // Remove microseconds if present
+  const [hours, minutes] = timeString.split(':');
+  let h = parseInt(hours);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;  // convert 0 -> 12 for 12 AM
+  return `${h}:${minutes} ${ampm}`;
+};
+
 
   const filteredEvents = events.filter(event => {
     const matchesKeyword = event.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -33,16 +45,8 @@ export default function AttendeeEventList() {
   });
 
   const handleBook = (eventId) => {
-    const bookedEvent = events.find(e => e.id === eventId);
-    const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-    const newTransaction = {
-      id: Date.now(),
-      eventId: bookedEvent.id,
-      eventTitle: bookedEvent.title,
-      date: new Date().toLocaleDateString(),
-    };
-    localStorage.setItem('transactions', JSON.stringify([...transactions, newTransaction]));
-    alert('Booked successfully!');
+  
+    navigate(`/events/${eventId}`);
   };
    
 
@@ -75,9 +79,9 @@ export default function AttendeeEventList() {
               {event.banner_image && (
                 
                 <img
-                  src={`http://localhost:8000/media/${event.banner_image}`}   // ✅ FIXED here
+                  src={event.banner_image.replace("http://localhost:5000", "http://localhost:8000/media")}   // ✅ FIXED here
                   className="card-img-top"
-                  alt={ event.banner_image}
+                  alt={ event.banner_image.replace("http://localhost:5000", "http://localhost:8000/media")}
                   style={{ maxHeight: '200px', objectFit: 'cover' }}
                 />
               )}
@@ -85,10 +89,10 @@ export default function AttendeeEventList() {
               <div className="card-body">
                 <h5 className="card-title">{event.title}</h5>
                 <p className="card-text"><strong>Date:</strong> {formatDate(event.date)}</p>
-                <p className="card-text"><strong>Start Time:</strong> {event.start_time}</p>
-                <p className="card-text"><strong>End Time:</strong> {event.end_time}</p>
+                <p className="card-text"><strong>Start Time:</strong> {formatTime(event.start_time)}</p>
+                <p className="card-text"><strong>End Time:</strong> {formatTime(event.end_time)}</p>
                 <p className="card-text"><strong>Location:</strong> {event.location}</p>
-                <p className="card-text">{event.description}</p>
+               
                 <p className="card-text"><strong>Category:</strong> {event.category}</p>
                 <button className="btn btn-success" onClick={() => handleBook(event.id)}>Book Now</button>
               </div>

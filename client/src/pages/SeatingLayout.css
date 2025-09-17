@@ -1,0 +1,104 @@
+.layout-container {
+  width: 100%;
+  padding: 20px;
+  text-align: center;
+}
+
+.title {
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+.screen {
+  background: linear-gradient(to right, #999, #ccc, #999);
+  height: 20px;
+  border-radius: 10px;
+  margin: 20px auto;
+  width: 70%;
+}
+
+.seating-area {
+  width: 100%;
+  overflow-x: auto;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 12px;
+}
+
+.section {
+  margin-left: 70px;
+  margin-bottom: 40px;
+}
+
+.section-title {
+  font-size: 18px;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.seat-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.seat-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+
+.row-label {
+  width: 20px;
+  font-weight: bold;
+}
+
+.seat {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+  border: 1px solid black;
+}
+
+.seat.available {
+  background-color: white;
+  color: black;
+}
+
+.seat.selected {
+  background-color: black;
+  color: white;
+}
+
+.seat.booked {
+  background-color: grey;
+  color: white;
+  cursor: not-allowed;
+}
+
+.footer {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.btn.continue {
+  background: black;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.btn.continue:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
