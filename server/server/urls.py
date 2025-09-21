@@ -30,6 +30,7 @@ urlpatterns = [
     path('', LandingPageView.as_view(), name='landing_page'),
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
+    path('api/events/',include('events.urls')),
     path('api/accounts/',include('accounts.urls')),
     path('api/booking/', include('booking.urls')),
 

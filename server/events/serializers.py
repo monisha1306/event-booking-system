@@ -25,23 +25,22 @@ class EventSerializer(serializers.ModelSerializer):
         
         def get_banner_image(self, obj):
          if obj.banner_image:
-            # Convert binary data to string using base64
+            
             return base64.b64encode(obj.banner_image).decode('utf-8')
          return None
 
   
     
     def create(self, validated_data):
-        # Get ticket tiers JSON string from the request
+       
         tiers_data_str = self.context['request'].data.get('ticket_tiers')
 
-        # Convert JSON string to list of dicts
+       
         tiers_data = json.loads(tiers_data_str) if tiers_data_str else []
 
-        # Create event
         event = Event.objects.create(**validated_data)
 
-        # Create related ticket tiers
+       
         for tier_data in tiers_data:
             TicketTier.objects.create(event=event, **tier_data)
 

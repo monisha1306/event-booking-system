@@ -6,6 +6,7 @@ from .serializers import BookingSerializer
 from events.models import Event
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import ValidationError
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
