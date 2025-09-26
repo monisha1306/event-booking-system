@@ -5,8 +5,8 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
-from .models import Event, TicketTier
-from .serializers import EventSerializer, TicketTierSerializer
+from server.events.models import Event, TicketTier
+from server.events.serializers import EventSerializer, TicketTierSerializer
 
 class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()

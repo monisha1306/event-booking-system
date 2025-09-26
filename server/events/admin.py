@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Organizer, Event, TicketTier
+from server.events.models import Organizer, Event, TicketTier
 
 
 class TicketTierInline(admin.TabularInline):

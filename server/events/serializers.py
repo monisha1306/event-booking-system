@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Event, TicketTier
+from server.events.models import Event, TicketTier
 
 class TicketTierSerializer(serializers.ModelSerializer):
     class Meta:

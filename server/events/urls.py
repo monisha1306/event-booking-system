@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import EventViewSet, TicketTierViewSet, EventList, EventDetail
+from server.events.views import EventViewSet, TicketTierViewSet, EventList, EventDetail
 
 router = DefaultRouter()
 router.register(r"events", EventViewSet, basename="event")

@@ -1,9 +1,9 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from .models import Booking
-from .serializers import BookingSerializer
-from events.models import TicketTier
+from server.booking.models import Booking
+from server.booking.serializers import BookingSerializer
+from server.events.models import TicketTier
 
 class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()

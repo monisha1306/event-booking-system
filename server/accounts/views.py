@@ -1,13 +1,10 @@
-
-
 from django.shortcuts import render
 from rest_framework import generics
-from .serializers import RegisterSerializer
+from server.accounts.serializers import RegisterSerializer
 from rest_framework.permissions import AllowAny
-from .models import CustomUser
+from server.accounts.models import CustomUser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.views import APIView

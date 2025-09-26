@@ -1,10 +1,10 @@
 from django.urls import path,include
-from .views import RegisterView
-from .views import MyTokenObtainPairView
+from server.accounts.views import RegisterView
+from server.accounts.views import MyTokenObtainPairView
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from .views import LandingPageView 
-from .views import password_reset,reset_password_confirm
+from server.accounts.views import LandingPageView 
+from server.accounts.views import password_reset,reset_password_confirm
 
 
 urlpatterns = [
