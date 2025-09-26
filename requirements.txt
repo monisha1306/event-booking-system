@@ -7,6 +7,8 @@ gunicorn
 djangorestframework==3.14.0
 djangorestframework-simplejwt
 django-cors-headers
+pymysql
+
 
 
 
