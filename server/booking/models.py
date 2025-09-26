@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from events.models import Event
+from server.events.models import Event
 from django.contrib.auth.models import User
 class Booking(models.Model):
     # Use your custom user model
