@@ -29,8 +29,6 @@ SECRET_KEY = 'django-insecure-p&8kmln-)#5oq6ckky%=%su#v+3i8c1lr0ps2$a4_b+liee03h
 DEBUG = True
 
 ALLOWED_HOSTS = ['https://event-booking-system-3-9dvi.onrender.com']
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Application definition
 
