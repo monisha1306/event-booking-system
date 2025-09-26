@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { BASE_URL } from "../config";
 
 export default function EventDetails() {
   const { id } = useParams();
@@ -8,20 +9,31 @@ export default function EventDetails() {
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Get token from localStorage
+  const token = localStorage.getItem("access");
+
   useEffect(() => {
-    axios.get('http://localhost:5000/events')
+    if (!token) {
+      console.log("⚠️ User not logged in!");
+      navigate("/login"); // redirect if no token
+      return;
+    }
+
+    axios.get(`${BASE_URL}api/events/${id}/`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
       .then(res => {
-        const foundEvent = res.data.find(e => String(e.id) === String(id));
-        setEvent(foundEvent || null);
+        setEvent(res.data);
         setLoading(false);
       })
       .catch(err => {
-        console.error("❌ Error fetching events:", err);
+        console.error("❌ Error fetching event:", err);
         setLoading(false);
       });
-  }, [id]);
+  }, [id, navigate, token]);
 
-  const formatDate = (dateString) => new Date(dateString).toLocaleDateString();
+  const formatDate = (dateString) => dateString ? new Date(dateString).toLocaleDateString() : '';
+  
   const formatTime = (timeString) => {
     if (!timeString) return '';
     const [hours, minutes] = timeString.split(':');
@@ -32,7 +44,6 @@ export default function EventDetails() {
   };
 
   const handleBooking = () => {
-  
     navigate(`/seating/${id}`);
   };
 
@@ -41,15 +52,12 @@ export default function EventDetails() {
 
   return (
     <div className="container my-4">
-      {/* Back Button */}
       <div className="mb-3">
         <button className="btn btn-secondary" onClick={() => navigate(-1)}>← Back to Events</button>
       </div>
 
-      {/* Event Card */}
       <div className="card shadow-sm p-3">
         <div className="row g-3">
-          {/* Left: Small banner */}
           {event.banner_image && (
             <div className="col-md-4">
               <img
@@ -61,7 +69,6 @@ export default function EventDetails() {
             </div>
           )}
 
-          {/* Right: Event Details */}
           <div className="col-md-8">
             <h2>{event.title}</h2>
             <p><strong>Date:</strong> {formatDate(event.date)}</p>
@@ -76,56 +83,42 @@ export default function EventDetails() {
 
             <div className="mt-3">
               <h5>Venue Information</h5>
-              <p>
-                {event.venue_details 
-                  ? event.venue_details 
-                  : "This venue offers ample seating, modern facilities, and a comfortable environment for attendees. Located at the heart of the city, it is easily accessible via public transport and has nearby parking options."}
-              </p>
-                      </div>
-                      <div className="mt-4">
-  <h5>Do's and Don'ts</h5>
-  <div className="row">
-    {/* Do's */}
-    <div className="col-md-6">
-      <div className="card p-3 shadow-sm border-success">
-        <h6 className="text-success">✅ Do's</h6>
-        <ul>
-          <li>Carry a valid ID proof for entry.</li>
-          <li>Reach the venue at least 30 minutes early.</li>
-          <li>Follow the seating arrangements provided.</li>
-          <li>Respect fellow attendees and staff.</li>
-                                          <li>Keep your ticket/QR code handy for scanning.</li>
-                                          <li>Do switch your mobile phones to silent mode during sessions.</li>
+              <p>{event.venue_details || "This venue offers ample seating, modern facilities, and a comfortable environment for attendees. Located at the heart of the city, it is easily accessible via public transport and has nearby parking options."}</p>
+            </div>
 
-        
-        </ul>
-      </div>
-    </div>
-
-    {/* Don'ts */}
-    <div className="col-md-6">
-      <div className="card p-3 shadow-sm border-danger">
-        <h6 className="text-danger">❌ Don'ts</h6>
-        <ul>
-          <li>Do not carry outside food or drinks.</li>
-          <li>Smoking or alcohol consumption is not allowed.</li>
-          <li>Avoid bringing large bags or restricted items.</li>
-          <li>Do not record or live-stream without permission.</li>
-          <li>Please avoid littering inside or outside the venue.</li>
-        
-        </ul>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-            {/* Continue for Booking Button */}
             <div className="mt-4">
-              <button 
-                className="btn btn-success btn-lg"
-                onClick={handleBooking}
-              >
+              <h5>Do's and Don'ts</h5>
+              <div className="row">
+                <div className="col-md-6">
+                  <div className="card p-3 shadow-sm border-success">
+                    <h6 className="text-success">✅ Do's</h6>
+                    <ul>
+                      <li>Carry a valid ID proof for entry.</li>
+                      <li>Reach the venue at least 30 minutes early.</li>
+                      <li>Follow the seating arrangements provided.</li>
+                      <li>Respect fellow attendees and staff.</li>
+                      <li>Keep your ticket/QR code handy for scanning.</li>
+                      <li>Switch your mobile phones to silent mode during sessions.</li>
+                    </ul>
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <div className="card p-3 shadow-sm border-danger">
+                    <h6 className="text-danger">❌ Don'ts</h6>
+                    <ul>
+                      <li>Do not carry outside food or drinks.</li>
+                      <li>Smoking or alcohol consumption is not allowed.</li>
+                      <li>Avoid bringing large bags or restricted items.</li>
+                      <li>Do not record or live-stream without permission.</li>
+                      <li>Please avoid littering inside or outside the venue.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <button className="btn btn-success btn-lg" onClick={handleBooking}>
                 Continue for Booking
               </button>
             </div>

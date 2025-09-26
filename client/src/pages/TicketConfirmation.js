@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import QRCode from 'react-qr-code'; // You'll need to install: npm install react-qr-code
 import './TicketConfirmation.css'
 const TicketConfirmation = () => {

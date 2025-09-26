@@ -1,46 +1,50 @@
-import React, { useState } from 'react';
-import { Form, Button, Alert, Card, Container, Row, Col } from 'react-bootstrap';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { Form, Button, Alert, Card, Container, Row, Col } from "react-bootstrap";
+import { useNavigate, Link } from "react-router-dom";
+import { BASE_URL } from "../config"; // import backend URL
 
 const Login = ({ setIsLoggedIn, setRole }) => {
-  const [username, setUsername] = useState(''); // ✅ Changed from email to username
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState(""); // Using username
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (!username || !password) {
-      setError('Please enter both username and password');
+      setError("Please enter both username and password");
       return;
     }
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/accounts/login/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }), // ✅ sending username instead of email
+      const response = await fetch(`${BASE_URL}api/accounts/login/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('access', data.access);
-        localStorage.setItem('refresh', data.refresh);
-        localStorage.setItem('role', data.role);
+        // Save tokens in localStorage
+        localStorage.setItem("access", data.access);
+        localStorage.setItem("refresh", data.refresh);
+        localStorage.setItem("role", data.role);
 
+        // Update app state
         setIsLoggedIn(true);
         setRole(data.role);
 
-        navigate('/');
+        // Redirect to home or dashboard
+        navigate("/");
       } else {
-        setError(data.detail || 'Login failed');
+        setError(data.detail || "Login failed");
       }
     } catch (err) {
-      console.error('Login error:', err);
-      setError('Server error. Please try again later.');
+      console.error("Login error:", err);
+      setError("Server error. Please try again later.");
     }
   };
 
@@ -55,7 +59,6 @@ const Login = ({ setIsLoggedIn, setRole }) => {
               {error && <Alert variant="danger">{error}</Alert>}
 
               <Form onSubmit={handleSubmit}>
-                {/* ✅ Username field instead of Email */}
                 <Form.Group className="mb-3" controlId="formUsername">
                   <Form.Label>Username</Form.Label>
                   <Form.Control
@@ -82,11 +85,9 @@ const Login = ({ setIsLoggedIn, setRole }) => {
                   Login
                 </Button>
 
-                {/* Forgot Password link */}
                 <div className="text-center mt-3">
                   <Link to="/forgot-password">Forgot your password?</Link>
-                </div>
-
+                </div>  
               </Form>
             </Card.Body>
           </Card>

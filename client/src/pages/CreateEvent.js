@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../config';
 
 export default function CreateEvent() {
   const navigate = useNavigate();
@@ -14,19 +15,12 @@ export default function CreateEvent() {
     location: '',
     description: '',
     category: '',
-
-    banner: null, // Store file, not base64
-    ticketType: 'VIP',
-    quantity: '',
-    price: '',
-
-    banner: '',
+    banner: null,
     tickets: {
       vip: { quantity: '', price: '' },
       earlyBird: { quantity: '', price: '' },
-      general: { quantity: '', price: '' }
+      general: { quantity: '', price: '' },
     },
-
     organizerName: '',
     organizerContact: ''
   });
@@ -37,22 +31,14 @@ export default function CreateEvent() {
     const { name, value } = e.target;
     setEventData({ ...eventData, [name]: value });
   };
-  const convertTo24Hour = (time, ampm) => {
-  if (!time) return '';
-  let [hours, minutes] = time.split(':');
-  hours = parseInt(hours);
-  if (ampm === 'PM' && hours !== 12) hours += 12;
-  if (ampm === 'AM' && hours === 12) hours = 0;
-  return `${hours.toString().padStart(2,'0')}:${minutes}:00`; // Django TimeField format
-};
 
   const handleTicketChange = (type, field, value) => {
     setEventData((prev) => ({
       ...prev,
       tickets: {
         ...prev.tickets,
-        [type]: { ...prev.tickets[type], [field]: value }
-      }
+        [type]: { ...prev.tickets[type], [field]: value },
+      },
     }));
   };
 
@@ -64,60 +50,74 @@ export default function CreateEvent() {
     }
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const convertTo24Hour = (time, ampm) => {
+    if (!time) return '';
+    let [hours, minutes] = time.split(':');
+    hours = parseInt(hours);
+    if (ampm === 'PM' && hours !== 12) hours += 12;
+    if (ampm === 'AM' && hours === 12) hours = 0;
+    return `${hours.toString().padStart(2,'0')}:${minutes}:00`;
+  };
 
-  const formData = new FormData();
-  formData.append("title", eventData.title);
-  formData.append("date", eventData.date);
-  formData.append("start_time", convertTo24Hour(eventData.startTime, eventData.startAmPm));
-  formData.append("end_time", convertTo24Hour(eventData.endTime, eventData.endAmPm));
-  formData.append("location", eventData.location);
-  formData.append("description", eventData.description);
-  formData.append("category", eventData.category);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  if (eventData.banner) {
-    formData.append("banner_image", eventData.banner); // must match Django model field
-  }
-
-  formData.append("organizer_name", eventData.organizerName);
-  formData.append("organizer_contact", eventData.organizerContact);
-
-  // ✅ Convert tickets object into array for backend
-  const ticketTiersArray = [
-    { name: "VIP", price: eventData.tickets.vip.price, quantity: eventData.tickets.vip.quantity },
-    { name: "Early Bird", price: eventData.tickets.earlyBird.price, quantity: eventData.tickets.earlyBird.quantity },
-    { name: "General", price: eventData.tickets.general.price, quantity: eventData.tickets.general.quantity }
-  ];
-
-  // Append as JSON string
-  formData.append("ticket_tiers", JSON.stringify(ticketTiersArray));
-
-  try {
-    const response = await fetch("http://localhost:8000/api/events/", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (response.ok) {
-      alert("Event created successfully!");
-      navigate("/");
-    } else {
-      const errData = await response.json();
-      console.error("Error:", errData);
-      alert("Failed to create event");
+    const token = localStorage.getItem("access");
+    if (!token) {
+      alert("You must be logged in to create an event");
+      return;
     }
-  } catch (error) {
-    console.error("Error:", error);
-    alert("Server error");
-  }
-};
 
+    const formData = new FormData();
+    formData.append("title", eventData.title);
+    formData.append("date", eventData.date);
+    formData.append("start_time", convertTo24Hour(eventData.startTime, eventData.startAmPm));
+    formData.append("end_time", convertTo24Hour(eventData.endTime, eventData.endAmPm));
+    formData.append("location", eventData.location);
+    formData.append("description", eventData.description);
+    formData.append("category", eventData.category);
+
+    if (eventData.banner) formData.append("banner_image", eventData.banner);
+
+    formData.append("organizer_name", eventData.organizerName);
+    formData.append("organizer_contact", eventData.organizerContact);
+
+    const ticketArray = [
+      { name: "VIP", price: eventData.tickets.vip.price, quantity: eventData.tickets.vip.quantity },
+      { name: "Early Bird", price: eventData.tickets.earlyBird.price, quantity: eventData.tickets.earlyBird.quantity },
+      { name: "General", price: eventData.tickets.general.price, quantity: eventData.tickets.general.quantity },
+    ].filter(t => t.name && t.price && t.quantity);
+
+    formData.append("ticket_tiers", JSON.stringify(ticketArray));
+
+    try {
+      const res = await fetch(`${BASE_URL}api/events/`, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.ok) {
+        alert("Event created successfully!");
+        navigate("/");
+      } else {
+        const err = await res.json();
+        console.error("Create Event Error:", err);
+        alert("Failed to create event. Check console for details.");
+      }
+    } catch (error) {
+      console.error("Server Error:", error);
+      alert("Server error. Please try again.");
+    }
+  };
 
   return (
     <div className="container mt-5">
       <h2>Create Event</h2>
       <form onSubmit={handleSubmit}>
+        {/* Event fields */}
         <div className="mb-3">
           <label>Title:</label>
           <input type="text" name="title" value={eventData.title} onChange={handleChange} className="form-control" required />
@@ -171,37 +171,21 @@ export default function CreateEvent() {
           {preview && <img src={preview} alt="Preview" className="mt-3" style={{ maxWidth: '100%', height: 'auto' }} />}
         </div>
 
-
+        {/* Ticket Details */}
         <h4>Ticket Details</h4>
         {['vip', 'earlyBird', 'general'].map((type) => (
           <div key={type} className="border p-3 mb-3">
             <h5>{type === 'vip' ? 'VIP' : type === 'earlyBird' ? 'Early Bird' : 'General'}</h5>
             <div className="mb-3">
               <label>Tickets Available:</label>
-              <input
-                type="number"
-                min="0"
-                value={eventData.tickets[type].quantity}
-                onChange={(e) => handleTicketChange(type, 'quantity', e.target.value)}
-                className="form-control"
-                required
-              />
+              <input type="number" min="0" value={eventData.tickets[type].quantity} onChange={(e) => handleTicketChange(type, 'quantity', e.target.value)} className="form-control" required />
             </div>
             <div className="mb-3">
               <label>Ticket Price:</label>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                value={eventData.tickets[type].price}
-                onChange={(e) => handleTicketChange(type, 'price', e.target.value)}
-                className="form-control"
-                required
-              />
+              <input type="number" min="0" step="0.01" value={eventData.tickets[type].price} onChange={(e) => handleTicketChange(type, 'price', e.target.value)} className="form-control" required />
             </div>
           </div>
         ))}
-
 
         <div className="mb-3">
           <label>Organizer Name:</label>

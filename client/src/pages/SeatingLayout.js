@@ -4,111 +4,132 @@ import axios from "axios";
 import "./SeatingLayout.css";
 
 export default function SeatingLayout() {
-  const { id } = useParams(); 
-  const [sections, setSections] = useState([]);
-  const [selectedSeats, setSelectedSeats] = useState([]);
+  const { id } = useParams(); // Event ID
+  const [ticketTiers, setTicketTiers] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // Example booked seats (replace with backend data if needed)
-  const bookedSeats = ["VIP-4", "General-10"]; // ✅ now consistent with seatNumber format
 
   useEffect(() => {
     if (!id) return;
 
-    axios
-      .get(`http://localhost:5000/tickettier/${id}`)
-      .then((res) => {
-        setSections(res.data);
+    const fetchTicketTiers = async () => {
+      try {
+        const res = await axios.get(`http://localhost:8000/api/tickets/?event=${id}`);
+        const tickets = res.data.map((tier) => ({
+          ...tier,
+          selectedCount: 0, // track user selection
+          available_seats: tier.quantity - tier.booked_quantity, // compute available seats
+        }));
+        setTicketTiers(tickets);
         setLoading(false);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Error fetching ticket tiers:", err);
         setLoading(false);
-      });
+      }
+    };
+
+    fetchTicketTiers();
   }, [id]);
 
-  // Toggle seats using seatNumber format
-  const toggleSeat = (sectionName, seatNumber) => {
-    const seatKey = `${sectionName}-${seatNumber}`; // store as "VIP-22"
-    if (selectedSeats.includes(seatKey)) {
-      setSelectedSeats(selectedSeats.filter((s) => s !== seatKey));
-    } else {
-      setSelectedSeats([...selectedSeats, seatKey]);
+  // Handle seat selection
+  const handleSeatChange = (tierId, delta) => {
+    setTicketTiers((prev) =>
+      prev.map((tier) => {
+        if (tier.id === tierId) {
+          const newCount = tier.selectedCount + delta;
+          if (newCount >= 0 && newCount <= tier.available_seats) {
+            return { ...tier, selectedCount: newCount };
+          }
+        }
+        return tier;
+      })
+    );
+  };
+
+  // Handle booking
+  const handleBooking = async () => {
+    const selected = ticketTiers
+      .filter((tier) => tier.selectedCount > 0)
+      .map((tier) => ({ ticket_tier: tier.id, quantity: tier.selectedCount }));
+
+    if (selected.length === 0) return alert("Select at least one seat.");
+
+    try {
+      const token = localStorage.getItem("access");
+      if (!token) return alert("You must be logged in to book.");
+
+      const res = await axios.post(
+        "http://localhost:8000/api/booking/bookings/",
+        {
+          event: id,
+          ticket_items: selected,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (res.status === 201 || res.status === 200) {
+        alert("Booking confirmed!");
+        // Update available seats locally
+        setTicketTiers((prev) =>
+          prev.map((tier) => ({
+            ...tier,
+            available_seats: tier.available_seats - tier.selectedCount,
+            selectedCount: 0,
+          }))
+        );
+      } else {
+        alert("Failed to book. Please try again.");
+      }
+    } catch (err) {
+      console.error("Booking error:", err);
+      alert("Server error. Please try again.");
     }
   };
 
-  if (loading) return <p>Loading seats...</p>;
+  if (loading) return <p>Loading seat tiers...</p>;
+  if (!ticketTiers || ticketTiers.length === 0)
+    return <p>No ticket tiers available for this event.</p>;
 
   return (
     <div className="layout-container">
       <h2 className="title">🎬 Select Your Seats</h2>
-      <div className="screen">SCREEN</div>
 
-      <div className="seating-area">
-        {sections && sections.length > 0 ? (
-          sections.map((section, index) => {
-            const rows = Math.ceil(section.quantity / 40); // 40 seats per row
-            const seatsPerRow = 40;
+      {ticketTiers.map((tier) => (
+        <div key={tier.id} className="tier-container mb-3 p-3 border">
+          <h4>
+            {tier.name} (₹{tier.price}) — Available: {tier.available_seats}
+          </h4>
+          <div className="d-flex align-items-center gap-2 mt-2">
+            <button
+              className="btn btn-sm btn-secondary"
+              onClick={() => handleSeatChange(tier.id, -1)}
+              disabled={tier.selectedCount === 0}
+            >
+              -
+            </button>
+            <span>{tier.selectedCount}</span>
+            <button
+              className="btn btn-sm btn-success"
+              onClick={() => handleSeatChange(tier.id, 1)}
+              disabled={tier.selectedCount >= tier.available_seats}
+            >
+              +
+            </button>
+          </div>
+        </div>
+      ))}
 
-            return (
-              <div key={index} className="section">
-                <h3 className="section-title">
-                  {section.name} (₹{section.price})
-                </h3>
-                <div className="seat-grid">
-                  {[...Array(rows)].map((_, rowIndex) => (
-                    <div key={rowIndex} className="seat-row">
-                      <span className="row-label">
-                        {String.fromCharCode(65 + rowIndex)}
-                      </span>
-                      {[...Array(seatsPerRow)].map((_, seatIndex) => {
-                        const seatNumber = rowIndex * seatsPerRow + seatIndex + 1;
-                        if (seatNumber > section.quantity) return null;
-
-                        // ✅ consistent key format
-                        const seatKey = `${section.name}-${seatNumber}`;
-                        const isSelected = selectedSeats.includes(seatKey);
-                        const isBooked = bookedSeats.includes(seatKey);
-
-                        return (
-                          <div
-                            key={seatIndex}
-                            className={`seat ${
-                              isBooked
-                                ? "booked"
-                                : isSelected
-                                ? "selected"
-                                : "available"
-                            }`}
-                            onClick={() => !isBooked && toggleSeat(section.name, seatNumber)}
-                          >
-                            {seatNumber}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })
-        ) : (
-          <p>No seat data found.</p>
-        )}
-      </div>
-
-      {/* Footer */}
-      <div className="footer">
+      <div className="mt-4">
         <h5>
           Selected Seats:{" "}
-          {selectedSeats.length > 0 ? selectedSeats.join(", ") : "None"}
+          {ticketTiers
+            .filter((tier) => tier.selectedCount > 0)
+            .map((tier) => `${tier.name}: ${tier.selectedCount}`)
+            .join(", ") || "None"}
         </h5>
         <button
-          className="btn continue"
-          disabled={selectedSeats.length === 0}
-          onClick={() =>
-            alert(`Booking confirmed for ${selectedSeats.join(", ")}`)
-          }
+          className="btn btn-primary mt-2"
+          disabled={ticketTiers.every((t) => t.selectedCount === 0)}
+          onClick={handleBooking}
         >
           Continue
         </button>

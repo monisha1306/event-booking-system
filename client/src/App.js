@@ -15,6 +15,8 @@ import Signup from './components/Signup';
 import Login from './components/Login';
 import SeatingLayout from './pages/SeatingLayout';
 import EventDetails from './pages/EventDetails';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 //import ForgotPassword from './pages/ForgotPassword';
 
 function App() {

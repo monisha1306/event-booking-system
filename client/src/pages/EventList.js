@@ -6,43 +6,62 @@ export default function EventList() {
   const [events, setEvents] = useState([]);
   const navigate = useNavigate();
 
+  // Get JWT token from localStorage (assuming user is logged in)
+  const token = localStorage.getItem('access_token');
+
   useEffect(() => {
-    axios.get('http://localhost:5000/events')
+    axios.get('http://127.0.0.1:8000/api/events/', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
       .then(res => {
         console.log("✅ Events received:", res.data);
         setEvents(res.data);
       })
-      .catch(err => console.log("❌ Error fetching events:", err));
-  }, []);
+      .catch(err => console.error("❌ Error fetching events:", err));
+  }, [token]);
 
-  const handleBook = (event) => {
-    const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-    const newTransaction = {
-      id: Date.now(),
-      eventId: event.id,
-      eventTitle: event.title,
-      amount: 100, // Fixed amount for demo
-      date: new Date().toLocaleString(),
-    };
-    transactions.push(newTransaction);
-    localStorage.setItem('transactions', JSON.stringify(transactions));
-    alert('Booking Successful!');
-    navigate('/my-transactions');
+  const handleBook = async (event) => {
+    const seatNumber = prompt("Enter seat number:");
+    if (!seatNumber) return alert("Booking cancelled");
+
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/api/bookings/', {
+        event: event.id,
+        seat_number: seatNumber
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      console.log("✅ Booking response:", response.data);
+      alert("Booking Successful!");
+      navigate('/my-transactions');
+    } catch (error) {
+      console.error("❌ Booking error:", error);
+      if (error.response) {
+        alert(error.response.data.detail || "Booking failed.");
+      } else {
+        alert("Network error. Please try again.");
+      }
+    }
   };
 
   return (
     <div className="container mt-4">
       <h2 className="mb-4">Available Events</h2>
       <div className="row">
-        {events.map((event) => (
+        {events.length > 0 ? events.map((event) => (
           <div className="col-md-4 mb-4" key={event.id}>
             <div className="card">
-              {event.banner_image && ( // ✅ use banner_image from DB
+              {event.banner_image && (
                 <img src={event.banner_image} className="card-img-top" alt="banner" />
               )}
               <div className="card-body">
                 <h5 className="card-title">{event.title}</h5>
-                <p>{new Date(event.date).toLocaleDateString()} | {event.location}</p>
+                <p>{event.date ? new Date(event.date).toLocaleDateString() : "No date"} | {event.location}</p>
                 <p>{event.description}</p>
                 <p><strong>Category:</strong> {event.category}</p>
                 <button className="btn btn-success" onClick={() => handleBook(event)}>Book Now</button>
@@ -50,7 +69,8 @@ export default function EventList() {
               </div>
             </div>
           </div>
-        ))}
+        )) : <p>No events available</p>
+        }
       </div>
     </div>
   );

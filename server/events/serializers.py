@@ -1,47 +1,54 @@
 from rest_framework import serializers
 from .models import Event, TicketTier
-import json
 
 class TicketTierSerializer(serializers.ModelSerializer):
     class Meta:
         model = TicketTier
-        fields = ['id', 'name', 'price', 'quantity', 'event']
-        extra_kwargs = {
-            'event': {'required': False, 'allow_null': True}
-        }
+        fields = ["id", "name", "price", "quantity", "booked_quantity", "event"]
+        extra_kwargs = {"event": {"required": False, "allow_null": True}}
 
 class EventSerializer(serializers.ModelSerializer):
-    ticket_tiers = TicketTierSerializer(many=True, required=False)
+    ticket_tiers = TicketTierSerializer(many=True, required=False,write_only=True)
+    banner_image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Event
         fields = [
-            'id', 'title', 'description', 'date', 'start_time', 'end_time',
-            'location', 'category', 'banner_image',
-            'organizer_name', 'organizer_contact',
-            'is_approved', 'created_at', 'ticket_tiers'
+            "id", "title", "description", "date", "start_time", "end_time",
+            "location", "category", "banner_image", "banner_image_url",
+            "organizer_name", "organizer_contact",
+            "is_approved", "created_at", "ticket_tiers",
         ]
-        read_only_fields = ['is_approved', 'created_at']
-        
-        def get_banner_image(self, obj):
-         if obj.banner_image:
-            
-            return base64.b64encode(obj.banner_image).decode('utf-8')
-         return None
+        read_only_fields = ["is_approved", "created_at"]
 
-  
-    
+    def get_banner_image_url(self, obj):
+        if obj.banner_image:
+            return obj.banner_image.url
+        return None
+
     def create(self, validated_data):
-       
-        tiers_data_str = self.context['request'].data.get('ticket_tiers')
-
-       
-        tiers_data = json.loads(tiers_data_str) if tiers_data_str else []
-
+        # Extract nested tickets if present
+        ticket_data = validated_data.pop("ticket_tiers", [])
+        # Create the Event
         event = Event.objects.create(**validated_data)
-
-       
-        for tier_data in tiers_data:
-            TicketTier.objects.create(event=event, **tier_data)
-
+        # Create associated TicketTiers
+        for ticket in ticket_data:
+            TicketTier.objects.create(event=event, **ticket)
         return event
+
+    def update(self, instance, validated_data):
+        # Handle nested ticket update if needed
+        ticket_data = validated_data.pop("ticket_tiers", [])
+        instance = super().update(instance, validated_data)
+
+        # Update or create TicketTiers
+        for ticket in ticket_data:
+            ticket_obj, created = TicketTier.objects.update_or_create(
+                event=instance,
+                name=ticket.get("name"),
+                defaults={
+                    "price": ticket.get("price"),
+                    "quantity": ticket.get("quantity"),
+                }
+            )
+        return instance

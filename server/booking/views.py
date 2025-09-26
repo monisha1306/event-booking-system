@@ -1,25 +1,50 @@
-from rest_framework import viewsets, status
-from rest_framework.response import Response
+from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from .models import Booking
 from .serializers import BookingSerializer
-from events.models import Event
-from django.shortcuts import get_object_or_404
-from rest_framework.exceptions import ValidationError
-from rest_framework_simplejwt.authentication import JWTAuthentication
+from events.models import TicketTier
 
 class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
     permission_classes = [IsAuthenticated]
 
-    def perform_create(self, serializer):
-        event_id = self.request.data.get('event')
-        seat_number = self.request.data.get('seat_number')
+    def get_queryset(self):
+        return Booking.objects.filter(user=self.request.user)
 
-        event = get_object_or_404(Event, id=event_id)
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        event_id = request.data.get("event")
+        tickets = request.data.get("tickets")  # [{tier_id, quantity}, ...]
 
-        if Booking.objects.filter(event=event, seat_number=seat_number).exists():
-            raise ValidationError("Seat already booked.")
+        if not tickets:
+            return Response({"error": "No tickets provided."}, status=400)
 
-        serializer.save(user=self.request.user, event=event, seat_number=seat_number)
+        bookings_created = []
+
+        for t in tickets:
+            tier = TicketTier.objects.get(id=t["tier_id"])
+            requested_quantity = int(t["quantity"])
+            available = tier.quantity - tier.booked_quantity
+
+            if requested_quantity > available:
+                return Response(
+                    {"error": f"Not enough seats in {tier.name}. Available: {available}."},
+                    status=400
+                )
+
+            tier.booked_quantity += requested_quantity
+            tier.save()
+
+            booking = Booking.objects.create(
+                user=user,
+                event=tier.event,
+                ticket_tier=tier,
+                quantity=requested_quantity,
+                status="Paid"
+            )
+            bookings_created.append(booking)
+
+        serializer = self.get_serializer(bookings_created, many=True)
+        return Response(serializer.data, status=201)
